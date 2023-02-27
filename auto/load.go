@@ -32,12 +32,15 @@ func init() {
 func InitAmdin() {
 	db := database.NewDb()
 	user := models.User{}
-	err := db.Model(&models.User{}).Where("id = ?", 1).First(&user).Error
+	err := db.Model(&models.User{}).Where("user_email = ?", config.UserEmail).First(&user).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		user.UserEmail = config.UserEmail
 		user.UserPassword = config.UserPassword
 		user.IsAdmin = true
 		db.Model(&models.User{}).Create(&user)
+	}
+	if err != nil {
+		log.Fatal(err)
 	}
 }
 
