@@ -2,11 +2,13 @@ package auto
 
 import (
 	"database/sql"
+	"errors"
 	"log"
 
 	"github.com/msterzhang/onelist/api/database"
 	"github.com/msterzhang/onelist/api/models"
 	"github.com/msterzhang/onelist/config"
+	"gorm.io/gorm"
 )
 
 func init() {
@@ -27,17 +29,29 @@ func init() {
 	InitDatabase()
 }
 
+func InitAmdin() {
+	db := database.NewDb()
+	user := models.User{}
+	err := db.Model(&models.User{}).Where("id = ?", 1).First(&user).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		user.UserEmail = config.UserEmail
+		user.UserPassword = config.UserPassword
+		user.IsAdmin = true
+		db.Model(&models.User{}).Create(&user)
+	}
+}
+
 func InitDatabase() {
 	err := database.InitDb()
 	if err != nil {
 		log.Fatal("Gorm初始化数据库失败!报错：" + err.Error())
 	}
+	InitAmdin()
 }
 
 func Load() {
 	var err error
 	db := database.NewDb()
-
 	err = db.AutoMigrate(&models.TheTv{})
 	if err != nil {
 		log.Fatal(err)

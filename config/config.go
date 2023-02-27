@@ -18,6 +18,8 @@ var (
 	DBDATAURL     = ""
 	DbName        = ""
 	KeyDb         = ""
+	UserEmail     = ""
+	UserPassword  = ""
 	UA            = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36"
 )
 
@@ -54,5 +56,6 @@ func init() {
 	SECRETKEY = []byte(os.Getenv("API_SECRET"))
 	DbName = os.Getenv("DbName")
 	KeyDb = os.Getenv("KeyDb")
-	
+	UserEmail = os.Getenv("UserEmail")
+	UserPassword = os.Getenv("UserPassword")
 }
