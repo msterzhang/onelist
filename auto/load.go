@@ -38,6 +38,7 @@ func InitAmdin() {
 		user.UserPassword = config.UserPassword
 		user.IsAdmin = true
 		db.Model(&models.User{}).Create(&user)
+		return
 	}
 	if err != nil {
 		log.Fatal(err)
