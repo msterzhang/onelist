@@ -11,6 +11,15 @@ func Hash(password string) (string, error) {
 	return encoded, nil
 }
 
+// DecodePassword Decode the hashed password
+func DecodePassword(hashedPassword string) (string, error) {
+	e, err := base64.StdEncoding.DecodeString(hashedPassword)
+	if err != nil {
+		return "", err
+	}
+	return string(e), nil
+}
+
 // VerifyPassword verify the hashed password
 func VerifyPassword(hashedPassword, password string) error {
 	e, err := base64.StdEncoding.DecodeString(hashedPassword)
@@ -18,7 +27,7 @@ func VerifyPassword(hashedPassword, password string) error {
 		return err
 	}
 	if string(e) != password {
-		return errors.New("密码错误!")
+		return errors.New("密码错误")
 	}
 	return nil
 }

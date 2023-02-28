@@ -5,7 +5,20 @@
 ## 1.程序下载
 可以在github发布页下载已经编译好的二进制文件
 
-## 2.下载后文件夹中会有两个文件，一个是配置信息
+使用前必看，程序采用themoviedb作为刮削的资源库，推荐使用国外主机，否则你需要修改hosts文件。
+```
+99.84.251.12 api.themoviedb.org
+99.84.251.19 api.themoviedb.org
+99.84.251.67 api.themoviedb.org
+99.84.251.108 api.themoviedb.org
+156.146.56.162 image.tmdb.org
+108.138.246.49 image.tmdb.org
+```
+## 2.下载后先初始化配置文件
+
+输入`./onelist -run config`命令,便会生成配置文件config.env
+修改完config.env配置文件后,运行`onelist -run server`便可启动项目,运行`onelist -run admin`可查看管理员账户!
+
 config.env
 ```
 # 服务设置
@@ -24,7 +37,7 @@ UserPassword=xxxxx
 # 数据库设置
 DB_DRIVER=sqlite
 DB_USER=root
-DbName="onelist"
+DbName=onelist
 
 # 如果上面DB_DRIVER类型为mysql，就需要正确填下以下参数
 DB_PASSWORD_Debug=123456
@@ -38,12 +51,12 @@ KeyDb=22f10ca52f109158ac7fe064ebbcf697
 
 ```
 # 先运行，查看有无错误
-./onelist
+./onelist -run server
 
 注意：如果提示权限问题，可以先授权文件chmod 777 onelist
 
 # 如果想后台一直保持运行，可用以下命令
-nohup ./onelist >/dev/null 2>&1 &
+nohup ./onelist -run server >/dev/null 2>&1 &
 ```
 ## 4.登录
 访问你的`ip:端口`就可以进入管理后台了(记得防火墙放行该端口)
