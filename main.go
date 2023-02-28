@@ -28,7 +28,7 @@ func main() {
 					log.Fatal(err)
 				}
 				fmt.Println("初始化成功!")
-				fmt.Println("修改完config.env配置文件后,运行onelist -run server便可启动项目,运行onelist -run admin可查看管理员账户!")
+				fmt.Println("修改完config.env配置文件后,运行onelist -run server便可启动项目,忘记密码运行onelist -run admin可查看管理员账户!")
 			} else if run == "admin" {
 				user, err := initconfig.AdminData()
 				if err != nil {

@@ -59,3 +59,7 @@ func init() {
 	UserEmail = os.Getenv("UserEmail")
 	UserPassword = os.Getenv("UserPassword")
 }
+
+func Load() {
+
+}

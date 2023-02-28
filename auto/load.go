@@ -26,7 +26,6 @@ func init() {
 		}
 		log.Println("数据库创建成功!", err)
 	}
-	InitDatabase()
 }
 
 func InitAmdin() {
@@ -37,7 +36,11 @@ func InitAmdin() {
 		user.UserEmail = config.UserEmail
 		user.UserPassword = config.UserPassword
 		user.IsAdmin = true
-		db.Model(&models.User{}).Create(&user)
+		err := db.Model(&models.User{}).Create(&user).Error
+		if err != nil {
+			log.Fatal(err)
+			return
+		}
 		return
 	}
 	if err != nil {

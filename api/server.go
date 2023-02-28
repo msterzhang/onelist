@@ -6,18 +6,13 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/gin-gonic/gin"
+	"github.com/msterzhang/onelist/api/auth"
+	"github.com/msterzhang/onelist/api/controllers"
+	"github.com/msterzhang/onelist/api/middleware"
+	"github.com/msterzhang/onelist/auto"
 	"github.com/msterzhang/onelist/config"
 	"github.com/msterzhang/onelist/public"
-
-	"github.com/msterzhang/onelist/auto"
-
-	"github.com/msterzhang/onelist/api/middleware"
-
-	"github.com/msterzhang/onelist/api/controllers"
-
-	"github.com/msterzhang/onelist/api/auth"
-
-	"github.com/gin-gonic/gin"
 )
 
 func init() {
