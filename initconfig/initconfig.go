@@ -2,14 +2,14 @@ package initconfig
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
+	"os"
 
+	"github.com/msterzhang/onelist/api"
 	"github.com/msterzhang/onelist/api/database"
 	"github.com/msterzhang/onelist/api/models"
 	"github.com/msterzhang/onelist/api/security"
 	"github.com/msterzhang/onelist/api/utils/tools"
-	"github.com/msterzhang/onelist/auto"
 	"github.com/msterzhang/onelist/config"
 )
 
@@ -43,7 +43,7 @@ KeyDb=22f10ca52f109158ac7fe064ebbcf697
 
 func InitConfigEnv() error {
 	content := []byte(fmt.Sprintf(configEnv, tools.RandStringRunes(32)))
-	err := ioutil.WriteFile("config.env", content, 0644)
+	err := os.WriteFile("config.env", content, 0644)
 	if err != nil {
 		return err
 	}
@@ -51,7 +51,7 @@ func InitConfigEnv() error {
 }
 
 func AdminData() (models.User, error) {
-	auto.Load()
+	api.InitServer()
 	db := database.NewDb()
 	user := models.User{}
 	err := db.Model(&models.User{}).Where("user_email = ?", config.UserEmail).First(&user).Error

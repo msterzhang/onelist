@@ -11,7 +11,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func init() {
+func Load() {
 	if config.DBDRIVER == "mysql" {
 		db, err := sql.Open(config.DBDRIVER, config.DBDATAURL)
 		if err != nil {
@@ -25,9 +25,22 @@ func init() {
 			return
 		}
 		log.Println("数据库创建成功!", err)
+	} else {
+		InitDatabase()
 	}
 }
 
+// 初始化数据库
+func InitDatabase() {
+	err := database.InitDb()
+	if err != nil {
+		log.Fatal("Gorm初始化数据库失败!报错：" + err.Error())
+	}
+	AutoLoad()
+	InitAmdin()
+}
+
+// 初始化管理员
 func InitAmdin() {
 	db := database.NewDb()
 	user := models.User{}
@@ -48,15 +61,8 @@ func InitAmdin() {
 	}
 }
 
-func InitDatabase() {
-	err := database.InitDb()
-	if err != nil {
-		log.Fatal("Gorm初始化数据库失败!报错：" + err.Error())
-	}
-	InitAmdin()
-}
-
-func Load() {
+// 初始化表信息
+func AutoLoad() {
 	var err error
 	db := database.NewDb()
 	err = db.AutoMigrate(&models.TheTv{})

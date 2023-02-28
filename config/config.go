@@ -2,7 +2,6 @@ package config
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"strconv"
 
@@ -24,11 +23,11 @@ var (
 )
 
 // Load the server PORT
-func init() {
+func Load() {
 	var err error
 	err = godotenv.Load("config.env")
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
 	PORT, err = strconv.Atoi(os.Getenv("API_PORT"))
 	if err != nil {
@@ -58,8 +57,4 @@ func init() {
 	KeyDb = os.Getenv("KeyDb")
 	UserEmail = os.Getenv("UserEmail")
 	UserPassword = os.Getenv("UserPassword")
-}
-
-func Load() {
-
 }

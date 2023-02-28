@@ -15,7 +15,9 @@ import (
 	"github.com/msterzhang/onelist/public"
 )
 
-func init() {
+// 初始化配置及数据库
+func InitServer() {
+	config.Load()
 	auto.Load()
 }
 
@@ -45,6 +47,9 @@ func Faviconico(c *gin.Context) {
 }
 
 func Run() {
+	// 初始化
+	InitServer()
+
 	// Disable Console Color, you don't need console color when writing the logs to file.
 	gin.DisableConsoleColor()
 
