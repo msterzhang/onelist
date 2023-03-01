@@ -1,5 +1,5 @@
 # onelist
-## 一个类似emby的专注于刮削alist聚合网盘形成影视媒体库的程序。
+一个类似emby的专注于刮削alist聚合网盘形成影视媒体库的程序。
 
 ![](./docs/images/01.png)
 ## 1.程序下载
