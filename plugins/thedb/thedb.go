@@ -138,6 +138,7 @@ func GetMovieData(id int) (models.TheMovie, error) {
 	}
 	if config.DownLoadImage == "是" {
 		DownImages(data.PosterPath)
+		DownBackImage(data.BackdropPath)
 	}
 	return data, nil
 }
@@ -169,6 +170,7 @@ func GetTvData(id int) (models.TheTv, error) {
 	}
 	if config.DownLoadImage == "是" {
 		DownImages(data.PosterPath)
+		DownBackImage(data.BackdropPath)
 	}
 	return data, nil
 }

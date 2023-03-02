@@ -11,7 +11,7 @@ import (
 )
 
 var imgpath = "images"
-var keys = []string{"w220_and_h330_face", "w1920_and_h1080_bestv2", "w355_and_h200_multi_faces", "w227_and_h127_bestv2"}
+var keys = []string{"w220_and_h330_face", "w355_and_h200_multi_faces", "w227_and_h127_bestv2"}
 
 // 初始化图片保存目录
 func initDir() {
@@ -54,6 +54,21 @@ func DownPersonImage(id string) error {
 	initDir()
 	url := fmt.Sprintf("https://image.tmdb.org/t/p/%s/%s", "w220_and_h330_face", id)
 	file := fmt.Sprintf("%s/%s/%s", imgpath, "w220_and_h330_face", id)
+	if dir.FileExists(file) {
+		return nil
+	}
+	err := Download(url, file)
+	if err != nil {
+		log.Println(err)
+	}
+	return nil
+}
+
+// 下载大背景图
+func DownBackImage(id string) error {
+	initDir()
+	url := fmt.Sprintf("https://image.tmdb.org/t/p/%s/%s", "w1920_and_h1080_bestv2", id)
+	file := fmt.Sprintf("%s/%s/%s", imgpath, "w1920_and_h1080_bestv2", id)
 	if dir.FileExists(file) {
 		return nil
 	}
