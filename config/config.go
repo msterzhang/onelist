@@ -19,6 +19,7 @@ var (
 	KeyDb         = ""
 	UserEmail     = ""
 	UserPassword  = ""
+	DownLoadImage = ""
 	UA            = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36"
 )
 
@@ -57,4 +58,5 @@ func Load() {
 	KeyDb = os.Getenv("KeyDb")
 	UserEmail = os.Getenv("UserEmail")
 	UserPassword = os.Getenv("UserPassword")
+	DownLoadImage = os.Getenv("DownLoadImage")
 }

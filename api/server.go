@@ -286,6 +286,7 @@ func Run() {
 	played.POST("/list", controllers.GetPlayedList)
 	played.POST("/search", controllers.SearchPlayed)
 	played.POST("/data/list", controllers.GetPlayedDataList)
-
+	
+	r.GET("/t/p/*path",controllers.ImgServer)
 	r.Run(fmt.Sprintf(":%d", config.PORT))
 }

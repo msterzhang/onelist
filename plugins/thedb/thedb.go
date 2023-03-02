@@ -29,6 +29,8 @@ import (
 // https://image.tmdb.org/t/p/w220_and_h330_face/h7thH2xZeicwK7a3Pkr4cCzXkSu.jpg
 // https://image.tmdb.org/t/p/w1920_and_h1080_bestv2/yL0h5NggYqBzGvLzc4TTM049jDm.jpg
 // https://image.tmdb.org/t/p/w355_and_h200_multi_faces/yL0h5NggYqBzGvLzc4TTM049jDm.jpg
+// https://image.tmdb.org/t/p/w227_and_h127_bestv2/i5LwCRuHRuQxPVJPbOAIIkRKiQo.jpg
+
 var (
 	ImageHost = "http://image.tmdb.org/"
 	TheApi    = "https://api.themoviedb.org/3"
@@ -134,6 +136,9 @@ func GetMovieData(id int) (models.TheMovie, error) {
 	if err != nil {
 		return models.TheMovie{}, err
 	}
+	if config.DownLoadImage == "是" {
+		DownImages(data.PosterPath)
+	}
 	return data, nil
 }
 
@@ -161,6 +166,9 @@ func GetTvData(id int) (models.TheTv, error) {
 	err = json.Unmarshal(body, &data)
 	if err != nil {
 		return models.TheTv{}, err
+	}
+	if config.DownLoadImage == "是" {
+		DownImages(data.PosterPath)
 	}
 	return data, nil
 }
@@ -193,6 +201,9 @@ func GetTheSeasonData(id int, item int) (models.TheSeason, error) {
 	if err != nil {
 		return models.TheSeason{}, err
 	}
+	if config.DownLoadImage == "是" {
+		DownImages(data.PosterPath)
+	}
 	return data, nil
 }
 
@@ -220,6 +231,9 @@ func GetThePersonData(id int) (models.ThePerson, error) {
 	err = json.Unmarshal(body, &data)
 	if err != nil {
 		return models.ThePerson{}, err
+	}
+	if config.DownLoadImage == "是" {
+		DownPersonImage(data.ProfilePath)
 	}
 	return data, nil
 }

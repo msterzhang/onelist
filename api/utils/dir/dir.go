@@ -27,3 +27,19 @@ func GetFilesByPath(path string) []string {
 	fileList := []string{}
 	return GetFilesPath(path, fileList)
 }
+
+func DirExists(path string) bool {
+	_, err := os.Stat(path)
+	if err != nil {
+		return os.IsExist(err)
+	}
+	return true
+}
+
+func FileExists(path string) bool {
+	_, err := os.Stat(path)
+	if err != nil {
+		return os.IsExist(err)
+	}
+	return true
+}

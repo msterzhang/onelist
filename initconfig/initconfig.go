@@ -27,6 +27,9 @@ Env=Debug
 UserEmail=xxxx.@qq.com
 UserPassword=xxxxx
 
+# 下载刮削图片到本地
+DownLoadImage=是
+
 # 数据库设置
 DB_DRIVER=sqlite
 DB_USER=root
