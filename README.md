@@ -2,6 +2,8 @@
 一个类似emby的专注于刮削alist聚合网盘形成影视媒体库的程序。
 
 ![](./docs/images/01.png)
+
+安装教程：https://www.bilibili.com/video/BV15M41177LN
 ## 1.程序下载
 可以在github发布页下载已经编译好的二进制文件
 
