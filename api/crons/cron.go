@@ -2,6 +2,7 @@ package crons
 
 import (
 	"log"
+	"time"
 
 	"github.com/msterzhang/onelist/plugins/watch"
 	"github.com/robfig/cron/v3"
@@ -31,7 +32,8 @@ func DayWork() {
 // 初始化定时任务
 func Load() {
 	go Run()
-	Cron = cron.New()
+	local, _ := time.LoadLocation("Asia/Shanghai")
+	Cron = cron.New(cron.WithLocation(local), cron.WithSeconds())
 	_, err := Cron.AddFunc("@every 6h", RunSixH)
 	if err != nil {
 		log.Fatal("添加任务失败:" + err.Error())

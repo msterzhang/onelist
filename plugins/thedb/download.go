@@ -49,6 +49,7 @@ func DownImages(id string) error {
 	return nil
 }
 
+// 下载影人图片
 func DownPersonImage(id string) error {
 	initDir()
 	url := fmt.Sprintf("https://image.tmdb.org/t/p/%s/%s", "w220_and_h330_face", id)
