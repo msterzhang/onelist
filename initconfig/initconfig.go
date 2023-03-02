@@ -20,6 +20,9 @@ API_PORT=5245
 FaviconicoUrl=https://wework.qpic.cn/wwpic/818353_fizV30xbQCGPQRP_1677394564/0
 API_SECRET=%s
 
+# 网站名称
+Title=onelist
+
 # Env有两种模式，Debug及Release，主要用在数据库为mysql时候，需要注意修改Env环境和mysql密码对应
 Env=Debug
 
@@ -29,6 +32,8 @@ UserPassword=xxxxx
 
 # 下载刮削图片到本地
 DownLoadImage=是
+# 留空则表示使用本地缓存图片,否则使用https://image.tmdb.org
+ImgUrl=https://image.tmdb.org
 
 # 数据库设置
 DB_DRIVER=sqlite

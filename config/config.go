@@ -4,12 +4,16 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/joho/godotenv"
+	"github.com/msterzhang/onelist/api/models"
 )
 
 var (
+	EnvFile       = "config.env"
 	PORT          = 0
+	Title         = ""
 	FaviconicoUrl = ""
 	SECRETKEY     []byte
 	DBDRIVER      = ""
@@ -20,13 +24,14 @@ var (
 	UserEmail     = ""
 	UserPassword  = ""
 	DownLoadImage = ""
+	ImgUrl        = ""
 	UA            = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36"
 )
 
 // Load the server PORT
 func Load() {
 	var err error
-	err = godotenv.Load("config.env")
+	err = godotenv.Load(EnvFile)
 	if err != nil {
 		return
 	}
@@ -35,6 +40,7 @@ func Load() {
 		PORT = 9000
 	}
 	Env := os.Getenv("Env")
+	Title = os.Getenv("Title")
 	FaviconicoUrl = os.Getenv("FaviconicoUrl")
 	if Env == "Debug" {
 		DBDATAURL = fmt.Sprintf("%s:%s@tcp(127.0.0.1:3306)/?charset=utf8mb4", os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD_Debug"))
@@ -59,4 +65,47 @@ func Load() {
 	UserEmail = os.Getenv("UserEmail")
 	UserPassword = os.Getenv("UserPassword")
 	DownLoadImage = os.Getenv("DownLoadImage")
+	ImgUrl = os.Getenv("ImgUrl")
+}
+
+// 获取配置
+func GetConfig() models.Config {
+	config := models.Config{
+		Title:         Title,
+		DownLoadImage: DownLoadImage,
+		ImgUrl:        ImgUrl,
+		KeyDb:         KeyDb,
+		FaviconicoUrl: FaviconicoUrl,
+	}
+	return config
+}
+
+// 设置配置
+func SetConfig(config models.Config) {
+	Title = config.Title
+	DownLoadImage = config.DownLoadImage
+	ImgUrl = config.ImgUrl
+	KeyDb = config.KeyDb
+	FaviconicoUrl = config.FaviconicoUrl
+}
+
+// 保存配置
+func SaveConfig(config models.Config) (models.Config, error) {
+	b, err := os.ReadFile(EnvFile)
+	if err != nil {
+		return models.Config{}, err
+	}
+	data := strings.ReplaceAll(string(b), "Title="+Title, "Title="+config.Title)
+	data = strings.ReplaceAll(data, "DownLoadImage="+DownLoadImage, "DownLoadImage="+config.DownLoadImage)
+	data = strings.ReplaceAll(data, "ImgUrl="+ImgUrl, "ImgUrl="+config.ImgUrl)
+	data = strings.ReplaceAll(data, "FaviconicoUrl="+FaviconicoUrl, "FaviconicoUrl="+config.FaviconicoUrl)
+	data = strings.ReplaceAll(data, "KeyDb="+KeyDb, "KeyDb="+config.KeyDb)
+	content := []byte(data)
+	err = os.WriteFile(EnvFile, content, 0644)
+	if err != nil {
+		return models.Config{}, err
+	}
+	SetConfig(config)
+	return GetConfig(), nil
+
 }

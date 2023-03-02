@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/msterzhang/onelist/api/auth"
 	"github.com/msterzhang/onelist/api/controllers"
+	"github.com/msterzhang/onelist/api/crons"
 	"github.com/msterzhang/onelist/api/middleware"
 	"github.com/msterzhang/onelist/auto"
 	"github.com/msterzhang/onelist/config"
@@ -19,6 +20,7 @@ import (
 func InitServer() {
 	config.Load()
 	auto.Load()
+	crons.Load()
 }
 
 // 用于打包的静态文件
@@ -286,7 +288,11 @@ func Run() {
 	played.POST("/list", controllers.GetPlayedList)
 	played.POST("/search", controllers.SearchPlayed)
 	played.POST("/data/list", controllers.GetPlayedDataList)
-	
-	r.GET("/t/p/*path",controllers.ImgServer)
+
+	setting := r.Group("/v1/api/config", auth.JWTAuthAdmin())
+	setting.POST("/data", controllers.GetConfig)
+	setting.POST("/save", controllers.SaveConfig)
+
+	r.GET("/t/p/*path", controllers.ImgServer)
 	r.Run(fmt.Sprintf(":%d", config.PORT))
 }

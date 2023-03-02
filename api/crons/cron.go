@@ -28,8 +28,8 @@ func DayWork() {
 	watch.WatchPath()
 }
 
-// init cron jobs
-func InitCron() {
+// 初始化定时任务
+func Load() {
 	go Run()
 	Cron = cron.New()
 	_, err := Cron.AddFunc("@every 6h", RunSixH)
