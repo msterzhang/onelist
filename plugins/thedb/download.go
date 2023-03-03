@@ -11,7 +11,20 @@ import (
 )
 
 var imgpath = "images"
-var keys = []string{"w220_and_h330_face", "w355_and_h200_multi_faces", "w227_and_h127_bestv2"}
+
+var dirs = []string{"w220_and_h330_face", "w710_and_h400_multi_faces", "w227_and_h127_bestv2", "w1920_and_h1080_bestv2", "w355_and_h200_multi_faces"}
+
+// 下载竖向海报图
+var keys = []string{"w220_and_h330_face"}
+
+// 电视分季信息图片
+var keysSeason = []string{"w220_and_h330_face"}
+
+// 电视分集信息图片
+var keysEpisode = []string{"w227_and_h127_bestv2", "w710_and_h400_multi_faces", "w1920_and_h1080_bestv2"}
+
+// 下载横向海报图及背景图
+var keysBackImge = []string{"w355_and_h200_multi_faces", "w1920_and_h1080_bestv2"}
 
 // 初始化图片保存目录
 func initDir() {
@@ -20,8 +33,8 @@ func initDir() {
 		if err != nil {
 			log.Panic("创建图片保存文件夹失败!")
 		}
-		for _, key := range keys {
-			imgsPath := imgpath + "/" + key
+		for _, item := range dirs {
+			imgsPath := imgpath + "/" + item
 			if !dir.DirExists(imgsPath) {
 				err := os.MkdirAll(imgsPath, os.ModePerm)
 				if err != nil {
@@ -32,13 +45,53 @@ func initDir() {
 	}
 }
 
-// 下载各分辨率图片
+// 下载电视剧及电影竖向海报图
 func DownImages(id string) error {
 	if len(id) == 0 {
 		return nil
 	}
 	initDir()
 	for _, key := range keys {
+		url := fmt.Sprintf("https://image.tmdb.org/t/p/%s/%s", key, id)
+		file := fmt.Sprintf("%s/%s/%s", imgpath, key, id)
+		if dir.FileExists(file) {
+			return nil
+		}
+		err := Download(url, file)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// 下载电视分季所需图片
+func DownSeasonImages(id string) error {
+	if len(id) == 0 {
+		return nil
+	}
+	initDir()
+	for _, key := range keysSeason {
+		url := fmt.Sprintf("https://image.tmdb.org/t/p/%s/%s", key, id)
+		file := fmt.Sprintf("%s/%s/%s", imgpath, key, id)
+		if dir.FileExists(file) {
+			return nil
+		}
+		err := Download(url, file)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// 下载电视分集所需图片
+func DownEpisodeImages(id string) error {
+	if len(id) == 0 {
+		return nil
+	}
+	initDir()
+	for _, key := range keysEpisode {
 		url := fmt.Sprintf("https://image.tmdb.org/t/p/%s/%s", key, id)
 		file := fmt.Sprintf("%s/%s/%s", imgpath, key, id)
 		if dir.FileExists(file) {
@@ -70,20 +123,22 @@ func DownPersonImage(id string) error {
 	return nil
 }
 
-// 下载大背景图
+// 下载封面及大背景图
 func DownBackImage(id string) error {
 	if len(id) == 0 {
 		return nil
 	}
 	initDir()
-	url := fmt.Sprintf("https://image.tmdb.org/t/p/%s/%s", "w1920_and_h1080_bestv2", id)
-	file := fmt.Sprintf("%s/%s/%s", imgpath, "w1920_and_h1080_bestv2", id)
-	if dir.FileExists(file) {
-		return nil
-	}
-	err := Download(url, file)
-	if err != nil {
-		return err
+	for _, key := range keysBackImge {
+		url := fmt.Sprintf("https://image.tmdb.org/t/p/%s/%s", key, id)
+		file := fmt.Sprintf("%s/%s/%s", imgpath, key, id)
+		if dir.FileExists(file) {
+			return nil
+		}
+		err := Download(url, file)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }

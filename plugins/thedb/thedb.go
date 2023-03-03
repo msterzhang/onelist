@@ -204,7 +204,7 @@ func GetTheSeasonData(id int, item int) (models.TheSeason, error) {
 		return models.TheSeason{}, err
 	}
 	if config.DownLoadImage == "是" {
-		DownImages(data.PosterPath)
+		DownSeasonImages(data.PosterPath)
 	}
 	return data, nil
 }
@@ -407,6 +407,7 @@ func TheTvDb(id int, file string, GalleryUid string) (models.TheTv, error) {
 	if err != nil {
 		return models.TheTv{}, err
 	}
+	DownEpisodeImages(episode.StillPath)
 	season.TheTvID = uint(data.ID)
 	theseason.TheTvID = uint(data.ID)
 	episode.TheSeasonID = uint(theseason.ID)
