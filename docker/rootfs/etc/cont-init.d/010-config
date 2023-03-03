@@ -1,9 +1,15 @@
 #!/usr/bin/with-contenv bash
 
+function onelist_config {
 cd /config
 
 chown -R ${PUID}:${PGID} \
     /config
 
-s6-setuidgid ${PUID}:${PGID} /app/onelist -run config
-s6-setuidgid ${PUID}:${PGID} /app/onelist -run admin
+if [ ! -f /config/config.env ]; then
+    s6-setuidgid ${PUID}:${PGID} /app/onelist -run config
+    s6-setuidgid ${PUID}:${PGID} /app/onelist -run admin
+fi
+}
+
+onelist_config 2>&1 | sed "s#^#[cont-init.d] info: $(realpath $0): &#g"
