@@ -32,7 +32,7 @@ func RunWork(work models.Work) {
 		for _, file := range files {
 			if gallery.GalleryType == "tv" {
 				episode := models.Episode{}
-				err := db.Debug().Model(&models.Episode{}).Where("url = ?", file).First(&episode).Error
+				err := db.Model(&models.Episode{}).Where("url = ?", file).First(&episode).Error
 				if errors.Is(err, gorm.ErrRecordNotFound) {
 					_, err = thedb.RunTheTvWork(file, gallery.GalleryUid)
 					if err != nil {
@@ -41,7 +41,7 @@ func RunWork(work models.Work) {
 				}
 			} else {
 				themovie := models.TheMovie{}
-				err = db.Debug().Model(&models.TheMovie{}).Where("url = ?", file).First(&themovie).Error
+				err = db.Model(&models.TheMovie{}).Where("url = ?", file).First(&themovie).Error
 				if errors.Is(err, gorm.ErrRecordNotFound) {
 					_, err = thedb.RunTheMovieWork(file, gallery.GalleryUid)
 					if err != nil {

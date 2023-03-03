@@ -25,6 +25,7 @@ var (
 	UserPassword  = ""
 	DownLoadImage = ""
 	ImgUrl        = ""
+	VideoTypes    = ""
 	UA            = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36"
 )
 
@@ -66,6 +67,7 @@ func Load() {
 	UserPassword = os.Getenv("UserPassword")
 	DownLoadImage = os.Getenv("DownLoadImage")
 	ImgUrl = os.Getenv("ImgUrl")
+	VideoTypes = os.Getenv("VideoTypes")
 }
 
 // 获取配置
@@ -76,6 +78,7 @@ func GetConfig() models.Config {
 		ImgUrl:        ImgUrl,
 		KeyDb:         KeyDb,
 		FaviconicoUrl: FaviconicoUrl,
+		VideoTypes:    VideoTypes,
 	}
 	return config
 }
@@ -87,6 +90,7 @@ func SetConfig(config models.Config) {
 	ImgUrl = config.ImgUrl
 	KeyDb = config.KeyDb
 	FaviconicoUrl = config.FaviconicoUrl
+	VideoTypes = config.VideoTypes
 }
 
 // 保存配置
@@ -100,6 +104,7 @@ func SaveConfig(config models.Config) (models.Config, error) {
 	data = strings.ReplaceAll(data, "ImgUrl="+ImgUrl, "ImgUrl="+config.ImgUrl)
 	data = strings.ReplaceAll(data, "FaviconicoUrl="+FaviconicoUrl, "FaviconicoUrl="+config.FaviconicoUrl)
 	data = strings.ReplaceAll(data, "KeyDb="+KeyDb, "KeyDb="+config.KeyDb)
+	data = strings.ReplaceAll(data, "VideoTypes="+VideoTypes, "VideoTypes="+config.VideoTypes)
 	content := []byte(data)
 	err = os.WriteFile(EnvFile, content, 0644)
 	if err != nil {

@@ -6,4 +6,5 @@ type Config struct {
 	ImgUrl        string `json:"img_url"`
 	KeyDb         string `json:"key_db"`
 	FaviconicoUrl string `json:"faviconico_url"`
+	VideoTypes    string `json:"video_types"`
 }

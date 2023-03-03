@@ -34,6 +34,9 @@ func initDir() {
 
 // 下载各分辨率图片
 func DownImages(id string) error {
+	if len(id) == 0 {
+		return nil
+	}
 	initDir()
 	for _, key := range keys {
 		url := fmt.Sprintf("https://image.tmdb.org/t/p/%s/%s", key, id)
@@ -43,7 +46,7 @@ func DownImages(id string) error {
 		}
 		err := Download(url, file)
 		if err != nil {
-			log.Println(err)
+			return err
 		}
 	}
 	return nil
@@ -51,6 +54,9 @@ func DownImages(id string) error {
 
 // 下载影人图片
 func DownPersonImage(id string) error {
+	if len(id) == 0 {
+		return nil
+	}
 	initDir()
 	url := fmt.Sprintf("https://image.tmdb.org/t/p/%s/%s", "w220_and_h330_face", id)
 	file := fmt.Sprintf("%s/%s/%s", imgpath, "w220_and_h330_face", id)
@@ -59,13 +65,16 @@ func DownPersonImage(id string) error {
 	}
 	err := Download(url, file)
 	if err != nil {
-		log.Println(err)
+		return err
 	}
 	return nil
 }
 
 // 下载大背景图
 func DownBackImage(id string) error {
+	if len(id) == 0 {
+		return nil
+	}
 	initDir()
 	url := fmt.Sprintf("https://image.tmdb.org/t/p/%s/%s", "w1920_and_h1080_bestv2", id)
 	file := fmt.Sprintf("%s/%s/%s", imgpath, "w1920_and_h1080_bestv2", id)
@@ -74,7 +83,7 @@ func DownBackImage(id string) error {
 	}
 	err := Download(url, file)
 	if err != nil {
-		log.Println(err)
+		return err
 	}
 	return nil
 }

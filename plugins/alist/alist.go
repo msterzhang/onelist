@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -95,7 +96,6 @@ func AlistList(work models.Work, gallery models.Gallery, path string, Authorizat
 			return fileList, err
 		}
 	}
-
 	for _, file := range fs {
 		// 防止拼接path错误
 		if path[len(path)-1:] != "/" {
@@ -107,7 +107,12 @@ func AlistList(work models.Work, gallery models.Gallery, path string, Authorizat
 				return fileList, err
 			}
 		} else {
-			fileList = append(fileList, "/d"+path+file.Name)
+			// 判断文件格式是否满足刮削条件
+			fileAlistPath := "/d" + path + file.Name
+			fileExt := filepath.Ext(fileAlistPath)
+			if strings.Contains(config.VideoTypes, fileExt) {
+				fileList = append(fileList, fileAlistPath)
+			}
 		}
 	}
 	return fileList, nil

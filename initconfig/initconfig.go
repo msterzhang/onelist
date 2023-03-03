@@ -34,6 +34,8 @@ UserPassword=xxxxx
 DownLoadImage=是
 # 留空则表示使用本地缓存图片,否则使用https://image.tmdb.org
 ImgUrl=https://image.tmdb.org
+# 允许刮削alist中的视频文件类型
+VideoTypes=.mp4,.mkv,.flv
 
 # 数据库设置
 DB_DRIVER=sqlite
