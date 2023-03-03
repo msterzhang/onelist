@@ -28,7 +28,7 @@ RUN apk add --no-cache \
 	    /var/tmp/*
 
 COPY --chmod=755 ./docker/rootfs /
-COPY --chmod=755 --from=Build /build/onelist /app/onelist
+COPY --chmod=755 --from=Build /build/bin/onelist /app/onelist
 
 ENTRYPOINT [ "/init" ]
 
