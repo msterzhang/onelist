@@ -30,6 +30,12 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Install musl-tools
+        run: |
+          set -ex
+          sudo apt-get update
+          sudo apt-get install -y musl-tools
+
       - name: Install dependencies
         run: |
           sudo snap install zig --classic --beta
