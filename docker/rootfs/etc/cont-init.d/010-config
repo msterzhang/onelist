@@ -1,0 +1,9 @@
+#!/usr/bin/with-contenv bash
+
+cd /config
+
+chown -R ${PUID}:${PGID} \
+    /config
+
+s6-setuidgid ${PUID}:${PGID} /app/onelist -run config
+s6-setuidgid ${PUID}:${PGID} /app/onelist -run admin
