@@ -1,8 +1,8 @@
 FROM alpine:3.17 AS Build
 
-COPY --chmod=755 . /build
-WORKDIR /build
 RUN apk add --no-cache bash curl gcc git go musl-dev
+WORKDIR /build
+COPY --chmod=755 . /build
 RUN bash build.sh release docker
 
 FROM alpine:3.17
