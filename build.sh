@@ -85,7 +85,6 @@ BuildRelease() {
   done
   BuildWinArm64 ./build/onelist-windows-arm64.exe
   xgo -out "$appName" -ldflags="$ldflags" -tags=jsoniter .
-  # why? Because some target platforms seem to have issues with upx compression
   upx -9 ./onelist-linux-amd64
   upx -9 ./onelist-windows-amd64.exe
   mv onelist-* build
