@@ -31,7 +31,7 @@ jobs:
           sudo apt install upx
       - name: Build
         run: |
-          bash build.sh release
+          bash build.sh dev
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
