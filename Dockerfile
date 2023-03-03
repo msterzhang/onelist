@@ -22,10 +22,7 @@ RUN apk add --no-cache \
         tzdata \
         bash \
         s6-overlay && \
-    rm -rf \
-	    /tmp/* \
-        /var/cache/apk/* \
-	    /var/tmp/*
+    rm -rf /var/cache/apk/*
 
 COPY --chmod=755 ./docker/rootfs /
 COPY --chmod=755 --from=Build /build/bin/onelist /app/onelist
