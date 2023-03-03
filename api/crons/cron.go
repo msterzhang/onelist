@@ -40,7 +40,7 @@ func Load() {
 	if err != nil {
 		log.Fatal("添加任务失败:" + err.Error())
 	}
-	_, err = Cron.AddFunc("0 00 02 * * *", DayWork)
+	_, err = Cron.AddFunc("30 2 * * *", DayWork)
 	if err != nil {
 		log.Fatalf("添加任务失败:%s", err.Error())
 	}
