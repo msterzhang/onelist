@@ -4,7 +4,8 @@ function onelist_config {
 cd /config
 
 chown -R ${PUID}:${PGID} \
-    /config
+    /config \
+    /app
 
 if [ ! -f /config/config.env ]; then
     s6-setuidgid ${PUID}:${PGID} /app/onelist -run config
