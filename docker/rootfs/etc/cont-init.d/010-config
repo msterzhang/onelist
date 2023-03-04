@@ -4,7 +4,8 @@ function onelist_config {
 cd /config
 
 chown -R ${PUID}:${PGID} \
-    /config
+    /config \
+    /app
 
 if [ ! -f /config/config.env ]; then
     s6-setuidgid ${PUID}:${PGID} /app/onelist -run config
@@ -12,4 +13,4 @@ if [ ! -f /config/config.env ]; then
 fi
 }
 
-onelist_config 2>&1 | sed "s#^#[cont-init.d] info: $(realpath $0): &#g"
+onelist_config 2>&1 | sed "s#^#cont-init: info: $(realpath $0): \1#g"

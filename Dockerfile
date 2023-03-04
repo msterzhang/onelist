@@ -23,11 +23,14 @@ ENV S6_SERVICES_GRACETIME=30000 \
 RUN apk add --no-cache \
         tzdata \
         bash \
-        s6-overlay && \
+        s6-overlay \
+        ca-certificates && \
     rm -rf /var/cache/apk/*
 
 COPY --chmod=755 ./docker/rootfs /
 COPY --chmod=755 --from=Build /build/bin/onelist /app/onelist
+
+WORKDIR /config
 
 ENTRYPOINT [ "/init" ]
 
