@@ -7,6 +7,8 @@ RUN bash build.sh release docker
 
 FROM alpine:3.17
 
+LABEL MAINTAINER="ddsrem@163.com"
+
 ENV S6_SERVICES_GRACETIME=30000 \
     S6_KILL_GRACETIME=60000 \
     S6_CMD_WAIT_FOR_SERVICES_MAXTIME=0 \
