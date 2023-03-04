@@ -30,6 +30,8 @@ RUN apk add --no-cache \
 COPY --chmod=755 ./docker/rootfs /
 COPY --chmod=755 --from=Build /build/bin/onelist /app/onelist
 
+WORKDIR /config
+
 ENTRYPOINT [ "/init" ]
 
 EXPOSE 5245
