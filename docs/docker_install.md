@@ -1,19 +1,19 @@
-## 1.拉取docker镜像
+### 1.拉取docker镜像
 ```
 docker pull msterzhang/onelist:latest
 ```
 
-## 2.新建一个用于保存配置相关文件的目录，比如：
+### 2.新建一个用于保存配置相关文件的目录，比如：
 ```
 /root/onelist/config
 ```
 
-## 3.运行
+### 3.运行
 ```
 docker run -d --name onelist -e PUID=0 -e PGID=0 -e TZ=Asia/Shanghai -p 5245:5245 -v /root/onelist/config:/config msterzhang/onelist:latest
 ```
 
-## 4.修改配置
+### 4.修改配置
 编辑`/root/onelist/config`目录下config.env
 ```
 
@@ -53,22 +53,21 @@ DB_PASSWORD_Release=123456
 # 在https://www.themoviedb.org网站申请
 KeyDb=22f10ca52f109158ac7fe064ebbcf697
 ```
-## 5.重启容器
+### 5.重启容器
 ```
 docker restart onelist
 ```
-## 6.国内主机要修改Docker容器的hosts文件，才可以刮削资源：
+### 6.国内主机要修改Docker容器的hosts文件，才可以刮削资源：
 
-### 进入运行中的Docker容器：
+进入运行中的Docker容器：
 ```
 docker exec -it onelist /bin/bash
 ```
-### 编辑hosts文件：
+编辑hosts文件：
 ```
 vi /etc/hosts
 ```
-### 在文件的末尾添加所需的主机名和IP地址：
-
+在文件的末尾添加所需的主机名和IP地址：
 ```
 13.224.161.90 api.themoviedb.org
 104.16.61.155 image.themoviedb.org
@@ -86,14 +85,14 @@ vi /etc/hosts
 13.225.41.40 api.themoviedb.org
 13.226.251.88 api.themoviedb.org
 ```
-### 保存并退出文件。
+保存并退出文件。
 ```
 按Esc键，进入vim命令模式
 输入
 :wq
 回车退出
 ```
-### 退出容器：
+退出容器：
 ```
 exit
 ```
