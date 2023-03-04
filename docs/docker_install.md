@@ -10,7 +10,7 @@ docker pull msterzhang/onelist:latest
 
 ### 3.运行
 ```
-docker run -d --name onelist -e PUID=0 -e PGID=0 -e TZ=Asia/Shanghai -p 5245:5245 -v /root/onelist/config:/config msterzhang/onelist:latest
+docker run -d --name onelist -e PUID=0 -e PGID=0 -e TZ=Asia/Shanghai -p 5245:5245 -v /root/onelist/config:/config --add-host api.themoviedb.org:13.224.161.90 msterzhang/onelist:latest
 ```
 
 ### 4.修改配置
@@ -57,7 +57,7 @@ KeyDb=22f10ca52f109158ac7fe064ebbcf697
 ```
 docker restart onelist
 ```
-### 6.国内主机要修改Docker容器的hosts文件，才可以刮削资源：
+### 6.如果刮削效果不好，可以在hosts增加dns解析：
 
 进入运行中的Docker容器：
 ```
