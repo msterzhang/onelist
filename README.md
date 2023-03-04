@@ -3,7 +3,10 @@
 
 ![](./docs/images/01.png)
 
-安装教程：https://www.bilibili.com/video/BV15M41177LN
+[docker安装](./docs/docker_install.md) | [docker-compose方式安装](./docs/docker_conpose_install.md)
+
+
+手动安装教程：https://www.bilibili.com/video/BV15M41177LN
 ## 1.程序下载
 可以在github发布页下载已经编译好的二进制文件
 
