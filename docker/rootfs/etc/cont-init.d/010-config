@@ -12,4 +12,4 @@ if [ ! -f /config/config.env ]; then
 fi
 }
 
-onelist_config 2>&1 | sed "s#^#[cont-init.d] info: $(realpath $0): &#g"
+onelist_config 2>&1 | sed "s#^#cont-init: info: $(realpath $0): \1#g"
