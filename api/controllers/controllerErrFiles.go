@@ -296,7 +296,7 @@ func RefErrVideoById(c *gin.Context) {
 		if themovieNew.ID != 0 {
 			db.Model(&models.TheMovie{}).Where("id = ?", oldId).Delete(&themovieDb)
 		}
-		c.JSON(200, gin.H{"code": 200, "msg": "刮削电影成功!", "data": themovieNew})
+		c.JSON(200, gin.H{"code": 200, "msg": "刮削电影成功!", "data": themovieNew.ID})
 		return
 	}
 	thetvDb := models.TheTv{}
@@ -332,7 +332,7 @@ func RefErrVideoById(c *gin.Context) {
 		}
 	}
 	if s == len(thetvDb.TheSeasons) {
-		db.Model(&models.TheTv{}).Where("id = ?", thetvDb.ID).First(&thetvDb)
+		db.Model(&models.TheTv{}).Where("id = ?", thetvDb.ID).Delete(&thetvDb)
 	}
-	c.JSON(200, gin.H{"code": 200, "msg": "刮削节目成功!", "data": id})
+	c.JSON(200, gin.H{"code": 200, "msg": "刮削节目成功!", "data": thetvDb.ID})
 }
