@@ -9,12 +9,12 @@ import (
 	"path"
 	"path/filepath"
 	"regexp"
-	"strconv"
 	"strings"
 	"time"
 
 	"github.com/msterzhang/onelist/api/database"
 	"github.com/msterzhang/onelist/api/models"
+	"github.com/msterzhang/onelist/api/utils/extract"
 	"github.com/msterzhang/onelist/config"
 
 	"gorm.io/gorm"
@@ -41,6 +41,9 @@ var (
 
 // 搜索资源
 func SearchTheDb(key string, tv bool) (ThedbSearchRsp, error) {
+	if !tv {
+		key = extract.ExtractMovieName(key)
+	}
 	api := fmt.Sprintf("%s/search/movie?api_key=%s&language=zh&page=1&query=%s", TheApi, config.KeyDb, key)
 	if tv {
 		api = fmt.Sprintf("%s/search/tv?api_key=%s&language=zh&page=1&query=%s", TheApi, config.KeyDb, key)
@@ -278,27 +281,36 @@ func TheMovieDb(id int, file string, GalleryUid string) (models.TheMovie, error)
 	data.TheCredit = credit
 	casts := credit.Cast
 	// persons := []models.ThePerson{}
+	db := database.NewDb()
 	for _, cast := range casts {
-		porson, err := GetThePersonData(cast.ID)
-		if err != nil {
-			continue
-		}
-		porson.TheMovies = append(porson.TheMovies, data)
-		err = ChunkPerson(porson)
-		if err != nil {
-			continue
+		dbPerson := models.ThePerson{}
+		err := db.Model(&models.ThePerson{}).Where("id = ?", cast.ID).First(&dbPerson).Error
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			porson, err := GetThePersonData(cast.ID)
+			if err != nil {
+				continue
+			}
+			porson.TheMovies = append(porson.TheMovies, data)
+			err = ChunkPerson(porson)
+			if err != nil {
+				continue
+			}
 		}
 	}
 	crews := credit.Crew
 	for _, crew := range crews {
-		porson, err := GetThePersonData(crew.ID)
-		if err != nil {
-			continue
-		}
-		porson.TheMovies = append(porson.TheMovies, data)
-		err = ChunkPerson(porson)
-		if err != nil {
-			continue
+		dbPerson := models.ThePerson{}
+		err := db.Model(&models.ThePerson{}).Where("id = ?", crew.ID).First(&dbPerson).Error
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			porson, err := GetThePersonData(crew.ID)
+			if err != nil {
+				continue
+			}
+			porson.TheMovies = append(porson.TheMovies, data)
+			err = ChunkPerson(porson)
+			if err != nil {
+				continue
+			}
 		}
 	}
 	data.Url = file
@@ -308,31 +320,6 @@ func TheMovieDb(id int, file string, GalleryUid string) (models.TheMovie, error)
 		return data, err
 	}
 	return data, nil
-}
-
-// 根据文件名获取剧集季及集信息
-func GetNumberWithFile(file string) (int, int, error) {
-	p, err := filepath.Abs(file)
-	if err != nil {
-		return 0, 0, err
-	}
-	SeasonNumber := 0
-	EpisodeNumber := 0
-	fileName := filepath.Base(p)
-	fileName = strings.ToUpper(fileName)
-	fileNameData := regexp.MustCompile(`S(\d+)E(\d+)`).FindStringSubmatch(fileName)
-	if len(fileNameData) >= 3 {
-		SeasonNumber, err = strconv.Atoi(fileNameData[1])
-		if err != nil {
-			return 0, 0, err
-		}
-		EpisodeNumber, err = strconv.Atoi(fileNameData[2])
-		if err != nil {
-			return 0, 0, err
-		}
-		return SeasonNumber, EpisodeNumber, nil
-	}
-	return SeasonNumber, EpisodeNumber, errors.New("get number error")
 }
 
 // 根据节目数据获取指定季的信息
@@ -391,7 +378,7 @@ func TheTvDb(id int, file string, GalleryUid string) (models.TheTv, error) {
 			continue
 		}
 	}
-	SeasonNumber, EpisodeNumber, err := GetNumberWithFile(file)
+	SeasonNumber, EpisodeNumber, err := extract.ExtractNumberWithFile(file)
 	if err != nil {
 		return models.TheTv{}, err
 	}
@@ -516,14 +503,11 @@ func RunTheTvWork(file string, GalleryUid string) (int, error) {
 	fileName := filepath.Base(p)
 	fileType := path.Ext(fileName)
 	name := strings.ReplaceAll(fileName, fileType, "")
-	name = strings.ToUpper(name)
-	SeasonNumber, _, err := GetNumberWithFile(file)
-	if err != nil {
-		return 0, err
+	re := regexp.MustCompile(`[\p{Han}\d{1,2}]+`)
+	matches := re.FindAllString(name, -1)
+	if len(matches) > 0 {
+		name = matches[0]
 	}
-	name = strings.Split(name, strconv.Itoa(SeasonNumber))[0]
-	name = strings.TrimRight(name, "0")
-	name = strings.TrimRight(name, "S")
 	data, err := SearchTheDb(name, true)
 	if err != nil {
 		return 0, err

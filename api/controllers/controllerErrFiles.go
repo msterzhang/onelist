@@ -267,3 +267,72 @@ func RefErrFileSearch(c *gin.Context) {
 	}
 	c.JSON(200, gin.H{"code": 200, "msg": "查询成功!", "data": data})
 }
+
+func RefErrVideoById(c *gin.Context) {
+	id, err := strconv.Atoi(c.Query("id"))
+	if err != nil {
+		c.JSON(200, gin.H{"code": 201, "msg": "id not number!", "data": ""})
+		return
+	}
+	oldId, err := strconv.Atoi(c.Query("old_id"))
+	if err != nil {
+		c.JSON(200, gin.H{"code": 201, "msg": "old_id not number!", "data": ""})
+		return
+	}
+	db := database.NewDb()
+	galleryType := c.Query("type")
+	if galleryType == "movie" {
+		themovieDb := models.TheMovie{}
+		err = db.Model(&models.TheMovie{}).Where("id = ?", oldId).First(&themovieDb).Error
+		if err != nil {
+			c.JSON(200, gin.H{"code": 201, "msg": "没有刮削到资源!", "data": err})
+			return
+		}
+		themovieNew, err := thedb.TheMovieDb(id, themovieDb.Url, themovieDb.GalleryUid)
+		if err != nil {
+			c.JSON(200, gin.H{"code": 201, "msg": "没有查询到资源!", "data": err})
+			return
+		}
+		if themovieNew.ID != 0 {
+			db.Model(&models.TheMovie{}).Where("id = ?", oldId).Delete(&themovieDb)
+		}
+		c.JSON(200, gin.H{"code": 200, "msg": "刮削电影成功!", "data": themovieNew})
+		return
+	}
+	thetvDb := models.TheTv{}
+	err = db.Model(&models.TheTv{}).Where("id = ?", oldId).Preload("TheSeasons").First(&thetvDb).Error
+	if err != nil {
+		c.JSON(200, gin.H{"code": 201, "msg": "没有查询到电视资源!", "data": err})
+		return
+	}
+	s := 0
+	for _, season := range thetvDb.TheSeasons {
+		seasonId := season.ID
+		seasonDb := models.TheSeason{}
+		err = db.Model(&models.TheSeason{}).Where("id = ?", seasonId).Preload("Episodes").First(&seasonDb).Error
+		if err != nil {
+			c.JSON(200, gin.H{"code": 201, "msg": "没有查询到分季资源!", "data": err})
+			return
+		}
+		e := 0
+		for _, episode := range seasonDb.Episodes {
+			file := episode.Url
+			thetv, err := thedb.TheTvDb(id, file, thetvDb.GalleryUid)
+			if err != nil {
+				continue
+			}
+			if thetv.ID != 0 {
+				db.Model(&models.Episode{}).Where("id = ?", episode.ID).Delete(&models.Episode{})
+				e++
+			}
+		}
+		if e == len(seasonDb.Episodes) {
+			db.Model(&models.TheSeason{}).Where("id = ?", seasonDb.ID).Delete(&seasonDb)
+			s++
+		}
+	}
+	if s == len(thetvDb.TheSeasons) {
+		db.Model(&models.TheTv{}).Where("id = ?", thetvDb.ID).First(&thetvDb)
+	}
+	c.JSON(200, gin.H{"code": 200, "msg": "刮削节目成功!", "data": id})
+}

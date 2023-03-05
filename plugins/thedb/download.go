@@ -28,18 +28,12 @@ var keysBackImge = []string{"w355_and_h200_multi_faces", "w1920_and_h1080_bestv2
 
 // 初始化图片保存目录
 func initDir() {
-	if !dir.DirExists(imgpath) {
-		err := os.MkdirAll(imgpath, os.ModePerm)
-		if err != nil {
-			log.Panic("创建图片保存文件夹失败!")
-		}
-		for _, item := range dirs {
-			imgsPath := imgpath + "/" + item
-			if !dir.DirExists(imgsPath) {
-				err := os.MkdirAll(imgsPath, os.ModePerm)
-				if err != nil {
-					log.Panic("创建图片保存文件夹失败!")
-				}
+	for _, item := range dirs {
+		imgsPath := imgpath + "/" + item
+		if !dir.DirExists(imgsPath) {
+			err := os.MkdirAll(imgsPath, os.ModePerm)
+			if err != nil {
+				log.Panic("创建图片保存文件夹失败!")
 			}
 		}
 	}

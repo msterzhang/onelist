@@ -258,6 +258,7 @@ func Run() {
 	errfile.POST("/work/list", controllers.GetErrFilesByWorkId)
 	errfile.POST("/ref/work/list", controllers.RefErrFilesByWorkId)
 	errfile.POST("/ref/file/id", controllers.RefErrFileById)
+	errfile.POST("/ref/video/id", controllers.RefErrVideoById)
 	errfile.POST("/ref/file/search", controllers.RefErrFileSearch)
 
 	star := r.Group("/v1/api/star", auth.JWTAuth())
@@ -294,5 +295,6 @@ func Run() {
 	setting.POST("/save", controllers.SaveConfig)
 
 	r.GET("/t/p/*path", controllers.ImgServer)
+	r.GET("/file/*path", controllers.FileServer)
 	r.Run(fmt.Sprintf(":%d", config.PORT))
 }
