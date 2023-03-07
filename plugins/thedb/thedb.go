@@ -261,7 +261,7 @@ func ChunkTheMovie(themovie models.TheMovie) error {
 	dbThemovie := models.TheMovie{}
 	err := db.Model(&models.TheMovie{}).Where("id = ?", themovie.ID).First(&dbThemovie).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return db.Model(&models.TheMovie{}).Create(&themovie).Error
+		return db.Debug().Model(&models.TheMovie{}).Create(&themovie).Error
 	}
 	themovie.CreatedAt = dbThemovie.CreatedAt
 	err = db.Model(&models.TheMovie{}).Where("id = ?", themovie.ID).Select("*").Updates(&themovie).Error

@@ -8,6 +8,7 @@ import (
 	"github.com/msterzhang/onelist/api/repository"
 	"github.com/msterzhang/onelist/api/repository/crud"
 	"github.com/msterzhang/onelist/api/service"
+	"github.com/msterzhang/onelist/plugins/thedb"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -168,4 +169,31 @@ func GetTheMovieListByGalleryId(c *gin.Context) {
 		themoviesNew := service.TheMoviesService(themovies, c.GetString("UserId"))
 		c.JSON(200, gin.H{"code": 200, "msg": "查询资源成功!", "data": themoviesNew, "num": num})
 	}(repo)
+}
+
+// 手动添加视频
+func AddThemovie(c *gin.Context) {
+	addVideo := models.AddVideo{}
+	err := c.ShouldBind(&addVideo)
+	if err != nil {
+		c.JSON(200, gin.H{"code": 201, "msg": "添加资源失败,表单解析出错!", "data": ""})
+		return
+	}
+	gallery := models.Gallery{}
+	db := database.NewDb()
+	err = db.Model(&models.Gallery{}).Where("gallery_uid = ?", addVideo.GalleryUid).First(&gallery).Error
+	if err != nil {
+		c.JSON(200, gin.H{"code": 201, "msg": "Gallery not found!", "data": ""})
+		return
+	}
+	file := addVideo.File
+	if gallery.IsAlist {
+		file = "/d" + addVideo.File
+	}
+	themovieNew, err := thedb.TheMovieDb(addVideo.TheMovieId, file, addVideo.GalleryUid)
+	if err != nil {
+		c.JSON(200, gin.H{"code": 201, "msg": "添加资源失败!", "data": err})
+		return
+	}
+	c.JSON(200, gin.H{"code": 200, "msg": "刮削电影成功!", "data": themovieNew.ID})
 }

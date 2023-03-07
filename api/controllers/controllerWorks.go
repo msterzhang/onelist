@@ -64,9 +64,9 @@ func CreateWork(c *gin.Context) {
 	work.GalleryUid = gallery.GalleryUid
 	var files = []string{}
 	if gallery.IsAlist {
-		files, err = alist.GetAlistFilesPath(work, gallery)
+		files, err = alist.GetAlistFilesPath(work.Path, work.IsRef, gallery)
 		if err != nil {
-			c.JSON(200, gin.H{"code": 201, "msg": err, "data": work})
+			c.JSON(200, gin.H{"code": 201, "msg": err.Error(), "data": work})
 			return
 		}
 	} else {
@@ -79,7 +79,7 @@ func CreateWork(c *gin.Context) {
 	work.FileNumber = len(files)
 	err = db.Model(&models.Work{}).Create(&work).Error
 	if err != nil {
-		c.JSON(200, gin.H{"code": 201, "msg": err, "data": work})
+		c.JSON(200, gin.H{"code": 201, "msg": err.Error(), "data": work})
 		return
 	}
 	go RunWork(files, work, gallery)
@@ -105,9 +105,9 @@ func ReNewWork(c *gin.Context) {
 	work.GalleryUid = gallery.GalleryUid
 	var files = []string{}
 	if gallery.IsAlist {
-		files, err = alist.GetAlistFilesPath(work, gallery)
+		files, err = alist.GetAlistFilesPath(work.Path, work.IsRef, gallery)
 		if err != nil {
-			c.JSON(200, gin.H{"code": 201, "msg": err, "data": ""})
+			c.JSON(200, gin.H{"code": 201, "msg": err.Error(), "data": ""})
 			return
 		}
 	} else {
@@ -121,7 +121,7 @@ func ReNewWork(c *gin.Context) {
 	work.Speed = 0
 	err = db.Model(&models.Work{}).Where("id = ?", work.Id).Select("*").Updates(&work).Error
 	if err != nil {
-		c.JSON(200, gin.H{"code": 201, "msg": err, "data": ""})
+		c.JSON(200, gin.H{"code": 201, "msg": err.Error(), "data": ""})
 		return
 	}
 	go RunWork(files, work, gallery)

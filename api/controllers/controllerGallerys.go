@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"strconv"
+	"strings"
 
 	"github.com/msterzhang/onelist/api/database"
 	"github.com/msterzhang/onelist/api/models"
@@ -18,7 +19,12 @@ func CreateGallery(c *gin.Context) {
 		c.JSON(200, gin.H{"code": 201, "msg": "创建失败,表单解析出错!", "data": gallery})
 		return
 	}
+	if !strings.Contains(gallery.AlistHost, "http") && gallery.IsAlist{
+		c.JSON(200, gin.H{"code": 201, "msg": "域名应该含有'http'!", "data": gallery})
+		return
+	}
 	db := database.NewDb()
+	gallery.AlistHost = strings.TrimRight(gallery.AlistHost, "/")
 	repo := crud.NewRepositoryGallerysCRUD(db)
 	func(galleryRepository repository.GalleryRepository) {
 		gallery, err := galleryRepository.Save(gallery)

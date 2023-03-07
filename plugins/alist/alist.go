@@ -50,9 +50,9 @@ func AlistLogin(gallery models.Gallery) (string, error) {
 }
 
 // 获取文件夹中文件及文件夹
-func AlistFilesByPath(work models.Work, gallery models.Gallery, path string, Authorization string) ([]Content, error) {
+func AlistFilesByPath(isRef bool, gallery models.Gallery, path string, Authorization string) ([]Content, error) {
 	api := fmt.Sprintf("%s/api/fs/list", gallery.AlistHost)
-	form := fmt.Sprintf(`{"path":"%s","password":"","page":1,"per_page":0,"refresh":%t}`, path, work.IsRef)
+	form := fmt.Sprintf(`{"path":"%s","password":"","page":1,"per_page":0,"refresh":%t}`, path, isRef)
 	req, err := http.NewRequest("POST", api, bytes.NewBufferString(form))
 	if err != nil {
 		return []Content{}, err
@@ -84,11 +84,11 @@ func AlistFilesByPath(work models.Work, gallery models.Gallery, path string, Aut
 }
 
 // 递归获取所有文件
-func AlistList(work models.Work, gallery models.Gallery, path string, Authorization string, fileList []string) ([]string, error) {
-	fs, err := AlistFilesByPath(work, gallery, path, Authorization)
+func AlistList(isRef bool, gallery models.Gallery, path string, Authorization string, fileList []string) ([]string, error) {
+	fs, err := AlistFilesByPath(isRef, gallery, path, Authorization)
 	if err != nil {
 		// 目录错误就重试一次
-		fileList, err = AlistList(work, gallery, path, Authorization, fileList)
+		fileList, err = AlistList(isRef, gallery, path, Authorization, fileList)
 		if err != nil {
 			if len(fileList) > 0 {
 				return fileList, nil
@@ -102,7 +102,7 @@ func AlistList(work models.Work, gallery models.Gallery, path string, Authorizat
 			path += "/"
 		}
 		if file.IsDir {
-			fileList, err = AlistList(work, gallery, path+file.Name+"/", Authorization, fileList)
+			fileList, err = AlistList(isRef, gallery, path+file.Name+"/", Authorization, fileList)
 			if err != nil {
 				return fileList, err
 			}
@@ -119,9 +119,8 @@ func AlistList(work models.Work, gallery models.Gallery, path string, Authorizat
 }
 
 // 根据目录获取alist中所有文件
-func GetAlistFilesPath(work models.Work, gallery models.Gallery) ([]string, error) {
+func GetAlistFilesPath(path string,isRef bool, gallery models.Gallery) ([]string, error) {
 	fileList := []string{}
-	path := work.Path
 	Authorization, err := AlistLogin(gallery)
 	if err != nil {
 		return []string{}, err
@@ -130,7 +129,7 @@ func GetAlistFilesPath(work models.Work, gallery models.Gallery) ([]string, erro
 	if gallery.AlistHost[len(gallery.AlistHost)-1:] == "/" {
 		gallery.AlistHost = strings.TrimRight(gallery.AlistHost, "/")
 	}
-	return AlistList(work, gallery, path, Authorization, fileList)
+	return AlistList(isRef, gallery, path, Authorization, fileList)
 }
 
 // 刮削失败后修改文件名时候同时提交到alist修改

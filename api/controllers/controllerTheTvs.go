@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"errors"
 	"strconv"
 
 	"github.com/msterzhang/onelist/api/database"
@@ -8,6 +9,9 @@ import (
 	"github.com/msterzhang/onelist/api/repository"
 	"github.com/msterzhang/onelist/api/repository/crud"
 	"github.com/msterzhang/onelist/api/service"
+	"github.com/msterzhang/onelist/api/utils/dir"
+	"github.com/msterzhang/onelist/plugins/alist"
+	"github.com/msterzhang/onelist/plugins/thedb"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -162,4 +166,46 @@ func SearchTheTv(c *gin.Context) {
 		thetvsNew := service.TheTvsService(thetvs, c.GetString("UserId"))
 		c.JSON(200, gin.H{"code": 200, "msg": "查询资源成功!", "data": thetvsNew, "num": num})
 	}(repo)
+}
+
+// 手动添加电视
+func AddTheTv(c *gin.Context) {
+	addVideo := models.AddVideo{}
+	err := c.ShouldBind(&addVideo)
+	if err != nil {
+		c.JSON(200, gin.H{"code": 201, "msg": "添加资源失败,表单解析出错!", "data": ""})
+		return
+	}
+	gallery := models.Gallery{}
+	db := database.NewDb()
+	err = db.Model(&models.Gallery{}).Where("gallery_uid = ?", addVideo.GalleryUid).First(&gallery).Error
+	if err != nil {
+		c.JSON(200, gin.H{"code": 201, "msg": "Gallery not found!", "data": ""})
+		return
+	}
+	var files = []string{}
+	if gallery.IsAlist {
+		files, err = alist.GetAlistFilesPath(addVideo.Path, true, gallery)
+		if err != nil {
+			c.JSON(200, gin.H{"code": 201, "msg": err, "data": ""})
+			return
+		}
+	} else {
+		files = dir.GetFilesByPath(addVideo.Path)
+	}
+	if len(files) == 0 {
+		c.JSON(200, gin.H{"code": 201, "msg": errors.New("files is 0"), "data": ""})
+		return
+	}
+	go RunTheTvById(addVideo, files, gallery)
+	c.JSON(200, gin.H{"code": 200, "msg": "刮削比较耗时，已添加到任务队列，后台运行中，请勿重复提交!", "data": addVideo.TheTvId})
+}
+
+func RunTheTvById(addVideo models.AddVideo, files []string, gallery models.Gallery) {
+	for _, file := range files {
+		_, err := thedb.TheTvDb(addVideo.TheTvId, file, gallery.GalleryUid)
+		if err != nil {
+			continue
+		}
+	}
 }

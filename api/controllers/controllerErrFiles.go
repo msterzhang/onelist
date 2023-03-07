@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"errors"
 	"path/filepath"
 	"strconv"
 
@@ -8,6 +9,7 @@ import (
 	"github.com/msterzhang/onelist/api/models"
 	"github.com/msterzhang/onelist/api/repository"
 	"github.com/msterzhang/onelist/api/repository/crud"
+	"github.com/msterzhang/onelist/api/utils/dir"
 	"github.com/msterzhang/onelist/plugins/alist"
 	"github.com/msterzhang/onelist/plugins/thedb"
 
@@ -253,6 +255,7 @@ func RefErrFileById(c *gin.Context) {
 	c.JSON(200, gin.H{"code": 200, "msg": "刮削电影成功!", "data": id})
 }
 
+// 搜索themoviedb资源
 func RefErrFileSearch(c *gin.Context) {
 	name := c.Query("name")
 	dataType := c.Query("type")
@@ -268,7 +271,8 @@ func RefErrFileSearch(c *gin.Context) {
 	c.JSON(200, gin.H{"code": 200, "msg": "查询成功!", "data": data})
 }
 
-func RefErrVideoById(c *gin.Context) {
+// 根据提交的themoviedb的id修复此电影
+func RefErrTheMovieById(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if err != nil {
 		c.JSON(200, gin.H{"code": 201, "msg": "id not number!", "data": ""})
@@ -280,59 +284,79 @@ func RefErrVideoById(c *gin.Context) {
 		return
 	}
 	db := database.NewDb()
-	galleryType := c.Query("type")
-	if galleryType == "movie" {
-		themovieDb := models.TheMovie{}
-		err = db.Model(&models.TheMovie{}).Where("id = ?", oldId).First(&themovieDb).Error
-		if err != nil {
-			c.JSON(200, gin.H{"code": 201, "msg": "没有刮削到资源!", "data": err})
-			return
-		}
-		themovieNew, err := thedb.TheMovieDb(id, themovieDb.Url, themovieDb.GalleryUid)
-		if err != nil {
-			c.JSON(200, gin.H{"code": 201, "msg": "没有查询到资源!", "data": err})
-			return
-		}
-		if themovieNew.ID != 0 {
-			db.Model(&models.TheMovie{}).Where("id = ?", oldId).Delete(&themovieDb)
-		}
-		c.JSON(200, gin.H{"code": 200, "msg": "刮削电影成功!", "data": themovieNew.ID})
+	themovieDb := models.TheMovie{}
+	err = db.Model(&models.TheMovie{}).Where("id = ?", oldId).First(&themovieDb).Error
+	if err != nil {
+		c.JSON(200, gin.H{"code": 201, "msg": "没有刮削到资源!", "data": err})
 		return
 	}
+	themovieNew, err := thedb.TheMovieDb(id, themovieDb.Url, themovieDb.GalleryUid)
+	if err != nil {
+		c.JSON(200, gin.H{"code": 201, "msg": "没有查询到资源!", "data": err})
+		return
+	}
+	if themovieNew.ID != 0 {
+		db.Model(&models.TheMovie{}).Where("id = ?", oldId).Delete(&themovieDb)
+	}
+	c.JSON(200, gin.H{"code": 200, "msg": "刮削电影成功!", "data": themovieNew.ID})
+
+}
+
+// 根据提交的目录，themoviedb的id修复此电视剧
+func RefErrTheTvById(c *gin.Context) {
+	id, err := strconv.Atoi(c.Query("id"))
+	if err != nil {
+		c.JSON(200, gin.H{"code": 201, "msg": "id not number!", "data": ""})
+		return
+	}
+	oldId, err := strconv.Atoi(c.Query("old_id"))
+	if err != nil {
+		c.JSON(200, gin.H{"code": 201, "msg": "old_id not number!", "data": ""})
+		return
+	}
+	path := c.PostForm("path")
+	db := database.NewDb()
 	thetvDb := models.TheTv{}
-	err = db.Model(&models.TheTv{}).Where("id = ?", oldId).Preload("TheSeasons").First(&thetvDb).Error
+	err = db.Model(&models.TheTv{}).Where("id = ?", oldId).First(&thetvDb).Error
 	if err != nil {
 		c.JSON(200, gin.H{"code": 201, "msg": "没有查询到电视资源!", "data": err})
 		return
 	}
-	s := 0
-	for _, season := range thetvDb.TheSeasons {
-		seasonId := season.ID
-		seasonDb := models.TheSeason{}
-		err = db.Model(&models.TheSeason{}).Where("id = ?", seasonId).Preload("Episodes").First(&seasonDb).Error
+	gallery := models.Gallery{}
+	err = db.Model(&models.Gallery{}).Where("gallery_uid = ?", thetvDb.GalleryUid).First(&gallery).Error
+	if err != nil {
+		c.JSON(200, gin.H{"code": 201, "msg": "Gallery not found!", "data": ""})
+		return
+	}
+	var files = []string{}
+	if gallery.IsAlist {
+		files, err = alist.GetAlistFilesPath(path, true, gallery)
 		if err != nil {
-			c.JSON(200, gin.H{"code": 201, "msg": "没有查询到分季资源!", "data": err})
+			c.JSON(200, gin.H{"code": 201, "msg": err, "data": ""})
 			return
 		}
-		e := 0
-		for _, episode := range seasonDb.Episodes {
-			file := episode.Url
-			thetv, err := thedb.TheTvDb(id, file, thetvDb.GalleryUid)
-			if err != nil {
-				continue
-			}
-			if thetv.ID != 0 {
-				db.Model(&models.Episode{}).Where("id = ?", episode.ID).Delete(&models.Episode{})
-				e++
-			}
-		}
-		if e == len(seasonDb.Episodes) {
-			db.Model(&models.TheSeason{}).Where("id = ?", seasonDb.ID).Delete(&seasonDb)
-			s++
+	} else {
+		files = dir.GetFilesByPath(path)
+	}
+	if len(files) == 0 {
+		c.JSON(200, gin.H{"code": 201, "msg": errors.New("files is 0"), "data": ""})
+		return
+	}
+	go RunRefTv(id, oldId, files, gallery)
+	c.JSON(200, gin.H{"code": 200, "msg": "刮削比较耗时，已添加到任务队列，后台运行中，请勿重复提交!", "data": id})
+}
+
+func RunRefTv(id int, oldId int, files []string, gallery models.Gallery) {
+	db := database.NewDb()
+	for _, file := range files {
+		_, err := thedb.TheTvDb(id, file, gallery.GalleryUid)
+		if err != nil {
+			continue
 		}
 	}
-	if s == len(thetvDb.TheSeasons) {
-		db.Model(&models.TheTv{}).Where("id = ?", thetvDb.ID).Delete(&thetvDb)
+	thetvDb := models.TheTv{}
+	err := db.Model(&models.TheTv{}).Where("id = ?", oldId).Delete(&thetvDb).Error
+	if err != nil {
+		return
 	}
-	c.JSON(200, gin.H{"code": 200, "msg": "刮削节目成功!", "data": thetvDb.ID})
 }

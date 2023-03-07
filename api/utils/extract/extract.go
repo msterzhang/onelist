@@ -16,10 +16,18 @@ func removeEndingOne(s string) string {
 
 // 过滤电影文件名
 func ExtractMovieName(s string) string {
+	oldName := s
 	// 删除发布年份和文件扩展名
 	re := regexp.MustCompile(`\d{4}`)
 	s = re.ReplaceAllString(s, "")
-
+	// 兼容全是纯数字的
+	if len(s) == 0 {
+		re = regexp.MustCompile(`\d+`)
+		matchenNumbers := re.FindAllString(oldName, -1)
+		if len(matchenNumbers) > 0 {
+			s = matchenNumbers[0]
+		}
+	}
 	// 删除括号及其内容
 	re = regexp.MustCompile(`\s*\([^)]+\)`)
 	s = re.ReplaceAllString(s, "")

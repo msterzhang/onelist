@@ -154,6 +154,7 @@ func Run() {
 	themovie.POST("/list", controllers.GetTheMovieList)
 	themovie.POST("/gallery/list", controllers.GetTheMovieListByGalleryId)
 	themovie.POST("/search", controllers.SearchTheMovie)
+	themovie.POST("/add", controllers.AddThemovie)
 
 	// 演员
 	theperson := r.Group("/v1/api/theperson", auth.JWTAuth())
@@ -174,6 +175,7 @@ func Run() {
 	thetv.POST("/list", controllers.GetTheTvList)
 	thetv.POST("/gallery/list", controllers.GetTheTvListByGalleryId)
 	thetv.POST("/search", controllers.SearchTheTv)
+	thetv.POST("/add", controllers.AddTheTv)
 
 	// 剧集分集
 	episode := r.Group("/v1/api/episode", auth.JWTAuth())
@@ -258,7 +260,8 @@ func Run() {
 	errfile.POST("/work/list", controllers.GetErrFilesByWorkId)
 	errfile.POST("/ref/work/list", controllers.RefErrFilesByWorkId)
 	errfile.POST("/ref/file/id", controllers.RefErrFileById)
-	errfile.POST("/ref/video/id", controllers.RefErrVideoById)
+	errfile.POST("/ref/themovie/id", controllers.RefErrTheMovieById)
+	errfile.POST("/ref/thetv/id", controllers.RefErrTheTvById)
 	errfile.POST("/ref/file/search", controllers.RefErrFileSearch)
 
 	star := r.Group("/v1/api/star", auth.JWTAuth())
@@ -295,6 +298,8 @@ func Run() {
 	setting.POST("/save", controllers.SaveConfig)
 
 	r.GET("/t/p/*path", controllers.ImgServer)
+	r.GET("/gallery/*path", controllers.GalleryImgServer)
 	r.GET("/file/*path", controllers.FileServer)
+	r.POST("/file/gallery/upload", controllers.FileUpload, auth.JWTAuthAdmin())
 	r.Run(fmt.Sprintf(":%d", config.PORT))
 }

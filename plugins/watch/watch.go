@@ -22,7 +22,7 @@ func RunWork(work models.Work) {
 		}
 		var files = []string{}
 		if gallery.IsAlist {
-			files, err = alist.GetAlistFilesPath(work, gallery)
+			files, err = alist.GetAlistFilesPath(work.Path,false, gallery)
 			if err != nil {
 				return
 			}

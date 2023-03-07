@@ -10,10 +10,7 @@ import (
 var Cron *cron.Cron
 
 func Run() {
-	err := watch.UpdateGalleryImage()
-	if err != nil {
-		log.Panic(err)
-	}
+	watch.UpdateGalleryImage()
 }
 
 // 5分钟运行一次
