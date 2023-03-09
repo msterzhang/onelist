@@ -2,6 +2,8 @@ package crud
 
 import (
 	"errors"
+	"fmt"
+	"strings"
 
 	"github.com/msterzhang/onelist/api/models"
 	"github.com/msterzhang/onelist/api/utils/channels"
@@ -154,6 +156,39 @@ func (r *RepositoryTheTvsCRUD) Search(q string, page int, size int) ([]models.Th
 	}
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return []models.TheTv{}, 0, errors.New("thetvs Not Found")
+	}
+	return []models.TheTv{}, 0, err
+}
+
+// Stor theTv from the DB
+func (r *RepositoryTheTvsCRUD) Sort(galleryUid string, mode string, order string, page int, size int) ([]models.TheTv, int, error) {
+	var err error
+	var num int64
+	theTvs := []models.TheTv{}
+	done := make(chan bool)
+	go func(ch chan<- bool) {
+		defer close(ch)
+		result := r.db.Model(&models.TheTv{}).Where("gallery_uid = ?", galleryUid)
+		result.Count(&num)
+		if mode == "release_date" {
+			mode = "last_air_date"
+		}
+		orderSql := fmt.Sprintf("%s %s", mode, order)
+		if config.DBDRIVER == "sqlite" && strings.Contains(mode, "_at") {
+			orderSql = fmt.Sprintf("datetime(%s) %s", mode, order)
+		}
+		err = result.Order(orderSql).Limit(size).Offset((page - 1) * size).Scan(&theTvs).Error
+		if err != nil {
+			ch <- false
+			return
+		}
+		ch <- true
+	}(done)
+	if channels.OK(done) {
+		return theTvs, int(num), nil
+	}
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return []models.TheTv{}, 0, errors.New("theTvs Not Found")
 	}
 	return []models.TheTv{}, 0, err
 }

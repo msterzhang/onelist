@@ -168,6 +168,45 @@ func SearchTheTv(c *gin.Context) {
 	}(repo)
 }
 
+
+func SortTheTv(c *gin.Context) {
+	galleryUid := c.Query("gallery_uid")
+	if len(galleryUid) == 0 {
+		c.JSON(200, gin.H{"code": 201, "msg": "参数不足!", "data": ""})
+		return
+	}
+	order := c.Query("order")
+	if len(order) == 0 {
+		c.JSON(200, gin.H{"code": 201, "msg": "参数不足!", "data": ""})
+		return
+	}
+	mode := c.Query("mode")
+	if len(mode) == 0 {
+		c.JSON(200, gin.H{"code": 201, "msg": "参数不足!", "data": ""})
+		return
+	}
+	page, errPage := strconv.Atoi(c.Query("page"))
+	size, errSize := strconv.Atoi(c.Query("size"))
+	if errPage != nil {
+		page = 1
+	}
+	if errSize != nil {
+		size = 8
+	}
+	db := database.NewDb()
+	repo := crud.NewRepositoryTheTvsCRUD(db)
+	func(theTvRepository repository.TheTvRepository) {
+		theTvs, num, err := theTvRepository.Sort(galleryUid,mode,order, page, size)
+		if err != nil {
+			c.JSON(200, gin.H{"code": 201, "msg": "没有查询到资源!", "data": theTvs, "num": num})
+			return
+		}
+		theTvsNew := service.TheTvsService(theTvs, c.GetString("UserId"))
+		c.JSON(200, gin.H{"code": 200, "msg": "查询资源成功!", "data": theTvsNew, "num": num})
+	}(repo)
+}
+
+
 // 手动添加电视
 func AddTheTv(c *gin.Context) {
 	addVideo := models.AddVideo{}

@@ -2,6 +2,8 @@ package crud
 
 import (
 	"errors"
+	"fmt"
+	"strings"
 
 	"github.com/msterzhang/onelist/api/models"
 	"github.com/msterzhang/onelist/api/utils/channels"
@@ -144,6 +146,36 @@ func (r *RepositoryTheMoviesCRUD) Search(q string, page int, size int) ([]models
 		} else {
 			err = result.Limit(size).Offset((page - 1) * size).Order("-updated_at").Scan(&themovies).Error
 		}
+		if err != nil {
+			ch <- false
+			return
+		}
+		ch <- true
+	}(done)
+	if channels.OK(done) {
+		return themovies, int(num), nil
+	}
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return []models.TheMovie{}, 0, errors.New("themovies Not Found")
+	}
+	return []models.TheMovie{}, 0, err
+}
+
+// Stor themovie from the DB
+func (r *RepositoryTheMoviesCRUD) Sort(galleryUid string, mode string, order string, page int, size int) ([]models.TheMovie, int, error) {
+	var err error
+	var num int64
+	themovies := []models.TheMovie{}
+	done := make(chan bool)
+	go func(ch chan<- bool) {
+		defer close(ch)
+		result := r.db.Model(&models.TheMovie{}).Where("gallery_uid = ?", galleryUid)
+		result.Count(&num)
+		orderSql := fmt.Sprintf("%s %s", mode, order)
+		if config.DBDRIVER == "sqlite" && strings.Contains(mode, "_at") {
+			orderSql = fmt.Sprintf("datetime(%s) %s", mode, order)
+		}
+		err = result.Order(orderSql).Limit(size).Offset((page - 1) * size).Scan(&themovies).Error
 		if err != nil {
 			ch <- false
 			return

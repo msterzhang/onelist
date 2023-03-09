@@ -9,5 +9,6 @@ type TheTvRepository interface {
 	UpdateByID(string, models.TheTv) (int64, error)
 	DeleteByID(string) (int64, error)
 	Search(string, int, int) ([]models.TheTv, int, error)
+	Sort(string,string,string, int, int) ([]models.TheTv, int, error)
 	FindByGalleryId(string, int, int) ([]models.TheTv, int, error)
 }

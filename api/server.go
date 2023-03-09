@@ -79,13 +79,14 @@ func Run() {
 	user.POST("/search", auth.JWTAuthAdmin(), controllers.SearchUser)
 
 	// 标签管理
-	genre := r.Group("/v1/api/genre", auth.JWTAuthAdmin())
-	genre.POST("/create", controllers.CreateGenre)
-	genre.POST("/update", controllers.UpdateGenreById)
-	genre.POST("/delete", controllers.DeleteGenreById)
-	genre.POST("/id", controllers.GetGenreById)
-	genre.POST("/list", controllers.GetGenreList)
-	genre.POST("/search", controllers.SearchGenre)
+	genre := r.Group("/v1/api/genre")
+	genre.POST("/create", auth.JWTAuthAdmin(), controllers.CreateGenre)
+	genre.POST("/update", auth.JWTAuthAdmin(), controllers.UpdateGenreById)
+	genre.POST("/delete", auth.JWTAuthAdmin(), controllers.DeleteGenreById)
+	genre.POST("/id", auth.JWTAuth(), controllers.GetGenreById)
+	genre.POST("/list", auth.JWTAuth(), controllers.GetGenreList)
+	genre.POST("/search", auth.JWTAuth(), controllers.SearchGenre)
+	genre.POST("/filte", auth.JWTAuth(), controllers.GetByIdFilte)
 
 	productioncompanie := r.Group("/v1/api/productioncompanie", auth.JWTAuthAdmin())
 	productioncompanie.POST("/create", controllers.CreateProductionCompanie)
@@ -155,6 +156,7 @@ func Run() {
 	themovie.POST("/gallery/list", controllers.GetTheMovieListByGalleryId)
 	themovie.POST("/search", controllers.SearchTheMovie)
 	themovie.POST("/add", controllers.AddThemovie)
+	themovie.POST("/sort", controllers.SortThemovie)
 
 	// 演员
 	theperson := r.Group("/v1/api/theperson", auth.JWTAuth())
@@ -176,6 +178,7 @@ func Run() {
 	thetv.POST("/gallery/list", controllers.GetTheTvListByGalleryId)
 	thetv.POST("/search", controllers.SearchTheTv)
 	thetv.POST("/add", controllers.AddTheTv)
+	thetv.POST("/sort", controllers.SortTheTv)
 
 	// 剧集分集
 	episode := r.Group("/v1/api/episode", auth.JWTAuth())

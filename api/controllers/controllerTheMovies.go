@@ -144,6 +144,70 @@ func SearchTheMovie(c *gin.Context) {
 	}(repo)
 }
 
+func TheMovieFilter(c *gin.Context) {
+	q := c.Query("q")
+	if len(q) == 0 {
+		c.JSON(200, gin.H{"code": 201, "msg": "参数错误!", "data": ""})
+		return
+	}
+	page, errPage := strconv.Atoi(c.Query("page"))
+	size, errSize := strconv.Atoi(c.Query("size"))
+	if errPage != nil {
+		page = 1
+	}
+	if errSize != nil {
+		size = 8
+	}
+	db := database.NewDb()
+	repo := crud.NewRepositoryTheMoviesCRUD(db)
+	func(themovieRepository repository.TheMovieRepository) {
+		themovies, num, err := themovieRepository.Search(q, page, size)
+		if err != nil {
+			c.JSON(200, gin.H{"code": 201, "msg": "没有查询到资源!", "data": themovies, "num": num})
+			return
+		}
+		themoviesNew := service.TheMoviesService(themovies, c.GetString("UserId"))
+		c.JSON(200, gin.H{"code": 200, "msg": "查询资源成功!", "data": themoviesNew, "num": num})
+	}(repo)
+}
+
+func SortThemovie(c *gin.Context) {
+	galleryUid := c.Query("gallery_uid")
+	if len(galleryUid) == 0 {
+		c.JSON(200, gin.H{"code": 201, "msg": "参数不足!", "data": ""})
+		return
+	}
+	order := c.Query("order")
+	if len(order) == 0 {
+		c.JSON(200, gin.H{"code": 201, "msg": "参数不足!", "data": ""})
+		return
+	}
+	mode := c.Query("mode")
+	if len(mode) == 0 {
+		c.JSON(200, gin.H{"code": 201, "msg": "参数不足!", "data": ""})
+		return
+	}
+	page, errPage := strconv.Atoi(c.Query("page"))
+	size, errSize := strconv.Atoi(c.Query("size"))
+	if errPage != nil {
+		page = 1
+	}
+	if errSize != nil {
+		size = 8
+	}
+	db := database.NewDb()
+	repo := crud.NewRepositoryTheMoviesCRUD(db)
+	func(themovieRepository repository.TheMovieRepository) {
+		themovies, num, err := themovieRepository.Sort(galleryUid, mode, order, page, size)
+		if err != nil {
+			c.JSON(200, gin.H{"code": 201, "msg": "没有查询到资源!", "data": themovies, "num": num})
+			return
+		}
+		themoviesNew := service.TheMoviesService(themovies, c.GetString("UserId"))
+		c.JSON(200, gin.H{"code": 200, "msg": "查询资源成功!", "data": themoviesNew, "num": num})
+	}(repo)
+}
+
 func GetTheMovieListByGalleryId(c *gin.Context) {
 	id := c.Query("id")
 	if len(id) == 0 {

@@ -1,12 +1,14 @@
 package controllers
 
 import (
+	"log"
 	"strconv"
 
 	"github.com/msterzhang/onelist/api/database"
 	"github.com/msterzhang/onelist/api/models"
 	"github.com/msterzhang/onelist/api/repository"
 	"github.com/msterzhang/onelist/api/repository/crud"
+	"github.com/msterzhang/onelist/api/service"
 
 	"github.com/gin-gonic/gin"
 )
@@ -122,5 +124,57 @@ func SearchGenre(c *gin.Context) {
 			return
 		}
 		c.JSON(200, gin.H{"code": 200, "msg": "查询资源成功!", "data": genres, "num": num})
+	}(repo)
+}
+
+func GetByIdFilte(c *gin.Context) {
+	id := c.Query("id")
+	if len(id) == 0 {
+		c.JSON(200, gin.H{"code": 201, "msg": "参数不足", "data": ""})
+		return
+	}
+	galleryUid := c.Query("gallery_uid")
+	if len(galleryUid) == 0 {
+		c.JSON(200, gin.H{"code": 201, "msg": "参数不足", "data": ""})
+		return
+	}
+	galleryType := c.Query("gallery_type")
+	if len(galleryType) == 0 {
+		c.JSON(200, gin.H{"code": 201, "msg": "参数不足", "data": ""})
+		return
+	}
+	order := c.Query("order")
+	if len(order) == 0 {
+		c.JSON(200, gin.H{"code": 201, "msg": "参数不足!", "data": ""})
+		return
+	}
+	mode := c.Query("mode")
+	if len(mode) == 0 {
+		c.JSON(200, gin.H{"code": 201, "msg": "参数不足!", "data": ""})
+		return
+	}
+	page, errPage := strconv.Atoi(c.Query("page"))
+	size, errSize := strconv.Atoi(c.Query("size"))
+	if errPage != nil {
+		page = 1
+	}
+	if errSize != nil {
+		size = 8
+	}
+	log.Println(c.GetString("UserId"))
+	db := database.NewDb()
+	repo := crud.NewRepositoryGenresCRUD(db)
+	func(genreRepository repository.GenreRepository) {
+		genre, num, err := genreRepository.FindByIdFilte(id, galleryUid, galleryType, mode, order, page, size)
+		if err != nil {
+			c.JSON(200, gin.H{"code": 201, "msg": "没有查询到资源!", "data": genre})
+			return
+		}
+		if galleryType == "movie" {
+			genre.TheMovies = service.TheMoviesService(genre.TheMovies, c.GetString("UserId"))
+		} else {
+			genre.TheTvs = service.TheTvsService(genre.TheTvs, c.GetString("UserId"))
+		}
+		c.JSON(200, gin.H{"code": 200, "msg": "查询资源成功!", "data": genre, "num": num})
 	}(repo)
 }

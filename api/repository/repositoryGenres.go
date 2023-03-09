@@ -9,4 +9,5 @@ type GenreRepository interface {
 	UpdateByID(string, models.Genre) (int64, error)
 	DeleteByID(string) (int64, error)
 	Search(string, int, int) ([]models.Genre, int, error)
+	FindByIdFilte(string, string, string, string, string, int, int) (models.Genre,int, error)
 }
