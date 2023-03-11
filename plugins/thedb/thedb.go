@@ -394,7 +394,9 @@ func TheTvDb(id int, file string, GalleryUid string) (models.TheTv, error) {
 	if err != nil {
 		return models.TheTv{}, err
 	}
-	DownEpisodeImages(episode.StillPath)
+	if config.DownLoadImage == "是" {
+		DownEpisodeImages(episode.StillPath)
+	}
 	season.TheTvID = uint(data.ID)
 	theseason.TheTvID = uint(data.ID)
 	episode.TheSeasonID = uint(theseason.ID)

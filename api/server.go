@@ -296,9 +296,9 @@ func Run() {
 	played.POST("/search", controllers.SearchPlayed)
 	played.POST("/data/list", controllers.GetPlayedDataList)
 
-	setting := r.Group("/v1/api/config", auth.JWTAuthAdmin())
+	setting := r.Group("/v1/api/config", auth.JWTAuth())
+	setting.POST("/save", auth.JWTAuthAdmin(), controllers.SaveConfig)
 	setting.POST("/data", controllers.GetConfig)
-	setting.POST("/save", controllers.SaveConfig)
 
 	r.GET("/t/p/*path", controllers.ImgServer)
 	r.GET("/gallery/*path", controllers.GalleryImgServer)
