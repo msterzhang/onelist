@@ -29,11 +29,8 @@ services:
 
 ```
 
-### 2.新建一个用于保存配置相关文件的目录，比如：
-```
-/root/onelist/config
-```
-### 3.运行命令启动项目容器
+
+### 2.运行命令启动项目容器
 ```
 # 切换到docker-compose.yml所在目录
 cd /root/onelist
@@ -42,7 +39,7 @@ cd /root/onelist
 docker-compose up -d
 ```
 
-### 4.修改配置
+### 3.修改配置
 编辑`/root/onelist/config`目录下config.env
 ```
 # 服务设置
@@ -81,9 +78,15 @@ DB_PASSWORD_Release=123456
 # 在https://www.themoviedb.org网站申请
 KeyDb=22f10ca52f109158ac7fe064ebbcf697
 ```
-### 5.重启项目容器
+### 4.重启项目容器
 ```
 docker-compose up -d
 ```
 
+### 5.监控容器，有最新版onelist，自动下载安装
+```
+docker pull containrrr/watchtower
+
+docker run --rm -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower -c --run-once onelist
+```
 > 注意：进入后台后需要删除初始化的xxxx.@qq.com账号，防止被人登录

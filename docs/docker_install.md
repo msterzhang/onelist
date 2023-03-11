@@ -53,11 +53,18 @@ DB_PASSWORD_Release=123456
 # 在https://www.themoviedb.org网站申请
 KeyDb=22f10ca52f109158ac7fe064ebbcf697
 ```
-### 5.重启容器
+### 5.重启容器,便可以访问了
 ```
 docker restart onelist
 ```
-### 6.如果刮削效果不好，可以在hosts增加dns解析：
+### 6.监控容器，有最新版onelist，自动下载安装
+```
+docker pull containrrr/watchtower
+
+docker run --rm -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower -c --run-once onelist
+```
+
+### 7.如果刮削效果不好，可以在hosts增加dns解析：
 
 进入运行中的Docker容器：
 ```

@@ -3,8 +3,25 @@
 
 ![](./docs/images/01.png)
 
+### 主要解决以下痛点：
+
+* alist挂载云盘后能在网页端看视频，却没有分类，没有海报墙
+
+* 使用webdav挂载本地后，用jellyfin或者emby刮削会下载视频截取封面导致封号
+
+* 用jellyfin或者emby之类，没有大带宽公网ip，在外难以访问
+
+### 常见问题汇总：
+* 比如你的alist是这样"[https://pan.alist.com/阿里云盘/电影](https://pan.alist.com/阿里云盘/电影)"，你在新建alist类型影库时候域名应该输入"https://pan.alist.com",不要有多余字符，在这个影库下挂载电影目录时候输入"/阿里云盘/电影"
+* 刮削成功无法播放，先确认alist使用最新版，且需要alist后台关闭"签名所有功能"，还有要确认是否是浏览器不支持的编码，这种可以调用外部浏览器播放
+
+
+### 多种安装方式，推荐docker安装：
+
+---
 [docker安装](./docs/docker_install.md) | [docker-compose方式安装](./docs/docker_conpose_install.md)
 
+---
 
 手动安装教程：https://www.bilibili.com/video/BV15M41177LN
 ## 1.程序下载
