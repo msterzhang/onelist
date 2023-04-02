@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"sort"
 	"strconv"
 
 	"github.com/msterzhang/onelist/api/database"
@@ -74,6 +75,7 @@ func GetTheSeasonById(c *gin.Context) {
 			c.JSON(200, gin.H{"code": 201, "msg": "没有查询到资源!", "data": theseason})
 			return
 		}
+		sort.SliceStable(theseason.Episodes, func(i, j int) bool { return theseason.Episodes[i].EpisodeNumber < theseason.Episodes[j].EpisodeNumber })
 		c.JSON(200, gin.H{"code": 200, "msg": "查询资源成功!", "data": theseason})
 	}(repo)
 }

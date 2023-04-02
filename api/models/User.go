@@ -13,7 +13,7 @@ type User struct {
 	Id           uint      `json:"id" gorm:"primaryKey"`
 	UserName     string    `json:"user_name"`
 	UserId       string    `json:"user_id"`
-	UserEmail    string    `json:"user_email"`
+	UserEmail    string    `json:"user_email" gorm:"not null;unique"`
 	UserPassword string    `json:"user_password"`
 	IsAdmin      bool      `json:"is_admin"`
 	IsLock       bool      `json:"is_lock"`
