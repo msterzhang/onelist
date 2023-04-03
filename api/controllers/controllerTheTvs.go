@@ -168,7 +168,6 @@ func SearchTheTv(c *gin.Context) {
 	}(repo)
 }
 
-
 func SortTheTv(c *gin.Context) {
 	galleryUid := c.Query("gallery_uid")
 	if len(galleryUid) == 0 {
@@ -196,7 +195,7 @@ func SortTheTv(c *gin.Context) {
 	db := database.NewDb()
 	repo := crud.NewRepositoryTheTvsCRUD(db)
 	func(theTvRepository repository.TheTvRepository) {
-		theTvs, num, err := theTvRepository.Sort(galleryUid,mode,order, page, size)
+		theTvs, num, err := theTvRepository.Sort(galleryUid, mode, order, page, size)
 		if err != nil {
 			c.JSON(200, gin.H{"code": 201, "msg": "没有查询到资源!", "data": theTvs, "num": num})
 			return
@@ -205,7 +204,6 @@ func SortTheTv(c *gin.Context) {
 		c.JSON(200, gin.H{"code": 200, "msg": "查询资源成功!", "data": theTvsNew, "num": num})
 	}(repo)
 }
-
 
 // 手动添加电视
 func AddTheTv(c *gin.Context) {

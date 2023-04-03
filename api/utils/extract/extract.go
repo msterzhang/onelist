@@ -51,7 +51,7 @@ func ExtractNumberWithFile(file string) (int, int, error) {
 	SeasonNumber := 0
 	EpisodeNumber := 0
 	fileName := filepath.Base(p)
-	re := regexp.MustCompile(`[Ss](\d{1,2})[Ee](\d{1,2})`)
+	re := regexp.MustCompile(`[Ss](\d{1,2})[Ee](\d{1,4})`)
 	match := re.FindStringSubmatch(fileName)
 	if len(match) < 3 {
 		return 0, 0, errors.New("get number error")
