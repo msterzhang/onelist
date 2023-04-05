@@ -11,6 +11,7 @@ import (
 	"github.com/msterzhang/onelist/api/utils/dir"
 	"github.com/msterzhang/onelist/plugins/alist"
 	"github.com/msterzhang/onelist/plugins/thedb"
+	"gorm.io/gorm"
 
 	"github.com/gin-gonic/gin"
 )
@@ -38,6 +39,37 @@ func RunWork(files []string, work models.Work, gallery models.Gallery) {
 			_, err = thedb.RunTheMovieWork(file, gallery.GalleryUid)
 			if err != nil {
 				SaveErrFile(file, err.Error(), gallery.GalleryUid, work.Id, false)
+			}
+		}
+		work.Speed += 1
+		db.Model(&models.Work{}).Where("id = ?", work.Id).Select("*").Updates(&work)
+	}
+	work.IsOk = true
+	db.Model(&models.Work{}).Where("id = ?", work.Id).Select("*").Updates(&work)
+}
+
+// 只刮削目录中新增的文件
+func RunWorkNew(files []string, work models.Work, gallery models.Gallery) {
+	db := database.NewDb()
+	var err error
+	for _, file := range files {
+		if gallery.GalleryType == "tv" {
+			episode := models.Episode{}
+			err := db.Model(&models.Episode{}).Where("url = ?", file).First(&episode).Error
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				_, err = thedb.RunTheTvWork(file, gallery.GalleryUid)
+				if err != nil {
+					continue
+				}
+			}
+		} else {
+			themovie := models.TheMovie{}
+			err = db.Model(&models.TheMovie{}).Where("url = ?", file).First(&themovie).Error
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				_, err = thedb.RunTheMovieWork(file, gallery.GalleryUid)
+				if err != nil {
+					continue
+				}
 			}
 		}
 		work.Speed += 1
@@ -122,6 +154,12 @@ func ReNewWork(c *gin.Context) {
 	err = db.Model(&models.Work{}).Where("id = ?", work.Id).Select("*").Updates(&work).Error
 	if err != nil {
 		c.JSON(200, gin.H{"code": 201, "msg": err.Error(), "data": ""})
+		return
+	}
+	mod := c.Query("mod")
+	if mod == "new" {
+		go RunWorkNew(files, work, gallery)
+		c.JSON(200, gin.H{"code": 200, "msg": "重启刮削任务成功,只刮削新增文件!", "data": work})
 		return
 	}
 	go RunWork(files, work, gallery)
