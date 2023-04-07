@@ -59,6 +59,7 @@ func RunWorkNew(files []string, work models.Work, gallery models.Gallery) {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
 				_, err = thedb.RunTheTvWork(file, gallery.GalleryUid)
 				if err != nil {
+					work.Speed += 1
 					continue
 				}
 			}
@@ -68,6 +69,7 @@ func RunWorkNew(files []string, work models.Work, gallery models.Gallery) {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
 				_, err = thedb.RunTheMovieWork(file, gallery.GalleryUid)
 				if err != nil {
+					work.Speed += 1
 					continue
 				}
 			}

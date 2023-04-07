@@ -19,7 +19,7 @@ func CreateGallery(c *gin.Context) {
 		c.JSON(200, gin.H{"code": 201, "msg": "创建失败,表单解析出错!", "data": gallery})
 		return
 	}
-	if !strings.Contains(gallery.AlistHost, "http") && gallery.IsAlist{
+	if !strings.Contains(gallery.AlistHost, "http") && gallery.IsAlist {
 		c.JSON(200, gin.H{"code": 201, "msg": "域名应该含有'http'!", "data": gallery})
 		return
 	}
@@ -115,7 +115,11 @@ func GetGalleryHostByUid(c *gin.Context) {
 			c.JSON(200, gin.H{"code": 201, "msg": "没有查询到资源!", "data": ""})
 			return
 		}
-		c.JSON(200, gin.H{"code": 200, "msg": "查询资源成功!", "data": gallery.AlistHost})
+		if gallery.IsAlist {
+			c.JSON(200, gin.H{"code": 200, "msg": "查询资源成功!", "data": gallery.AlistHost})
+			return
+		}
+		c.JSON(200, gin.H{"code": 200, "msg": "查询资源成功!", "data": ""})
 	}(repo)
 }
 
