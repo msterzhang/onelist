@@ -5,6 +5,7 @@ import (
 
 	"github.com/msterzhang/onelist/api/models"
 	"github.com/msterzhang/onelist/api/utils/channels"
+	"github.com/msterzhang/onelist/config"
 
 	"gorm.io/gorm"
 )
@@ -183,7 +184,11 @@ func (r *RepositoryStarsCRUD) FindAllByUser(star models.Star, page int, size int
 		defer close(ch)
 		result := r.db.Model(&models.Star{}).Where("user_id = ? AND data_type = ?", star.UserId, star.DataType).Find(&stars)
 		result.Count(&num)
-		err = result.Limit(size).Offset((page - 1) * size).Order("-ID").Scan(&stars).Error
+		if config.DBDRIVER == "sqlite" {
+			err = result.Order("datetime(updated_at) desc").Limit(size).Offset((page - 1) * size).Scan(&stars).Error
+		} else {
+			err = result.Order("-updated_at").Limit(size).Offset((page - 1) * size).Scan(&stars).Error
+		}
 		if err != nil {
 			ch <- false
 			return
