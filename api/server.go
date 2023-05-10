@@ -269,6 +269,7 @@ func Run() {
 	errfile.POST("/ref/thetv/id", controllers.RefErrTheTvById)
 	errfile.POST("/ref/file/search", controllers.RefErrFileSearch)
 
+	//收藏
 	star := r.Group("/v1/api/star", auth.JWTAuth())
 	star.POST("/create", controllers.CreateStar)
 	star.POST("/update", controllers.UpdateStarById)
@@ -279,6 +280,7 @@ func Run() {
 	star.POST("/search", controllers.SearchStar)
 	star.POST("/data/list", controllers.GetStarDataList)
 
+	// 点赞
 	heart := r.Group("/v1/api/heart", auth.JWTAuth())
 	heart.POST("/create", controllers.CreateHeart)
 	heart.POST("/update", controllers.UpdateHeartById)
@@ -306,6 +308,7 @@ func Run() {
 	aliOpen := r.Group("/v1/api/aliopen")
 	aliOpen.POST("/video", controllers.AliOpenVideo)
 
+	// 设置
 	setting := r.Group("/v1/api/config", auth.JWTAuth())
 	setting.POST("/save", auth.JWTAuthAdmin(), controllers.SaveConfig)
 	setting.POST("/data", controllers.GetConfig)
