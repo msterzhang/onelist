@@ -105,6 +105,28 @@ func GetGalleryList(c *gin.Context) {
 	}(repo)
 }
 
+func GetGalleryListAdmin(c *gin.Context) {
+	page, errPage := strconv.Atoi(c.Query("page"))
+	size, errSize := strconv.Atoi(c.Query("size"))
+	if errPage != nil {
+		page = 1
+	}
+	if errSize != nil {
+		size = 8
+	}
+	db := database.NewDb()
+	repo := crud.NewRepositoryGallerysCRUD(db)
+	func(galleryRepository repository.GalleryRepository) {
+		gallerys, num, err := galleryRepository.FindAllByAdmin(page, size)
+		if err != nil {
+			c.JSON(200, gin.H{"code": 201, "msg": "没有查询到资源!", "data": gallerys, "num": num})
+			return
+		}
+		c.JSON(200, gin.H{"code": 200, "msg": "查询资源成功!", "data": gallerys, "num": num})
+	}(repo)
+}
+
+
 func GetGalleryHostByUid(c *gin.Context) {
 	id := c.Query("id")
 	db := database.NewDb()
@@ -112,14 +134,14 @@ func GetGalleryHostByUid(c *gin.Context) {
 	func(galleryRepository repository.GalleryRepository) {
 		gallery, err := galleryRepository.FindByUID(id)
 		if err != nil {
-			c.JSON(200, gin.H{"code": 201, "msg": "没有查询到资源!", "data": ""})
+			c.JSON(200, gin.H{"code": 201, "msg": "没有查询到资源!", "data": "", "is_ali_open": false})
 			return
 		}
 		if gallery.IsAlist {
-			c.JSON(200, gin.H{"code": 200, "msg": "查询资源成功!", "data": gallery.AlistHost})
+			c.JSON(200, gin.H{"code": 200, "msg": "查询资源成功!", "data": gallery.AlistHost, "is_ali_open": gallery.IsAliOpen})
 			return
 		}
-		c.JSON(200, gin.H{"code": 200, "msg": "查询资源成功!", "data": ""})
+		c.JSON(200, gin.H{"code": 200, "msg": "查询资源成功!", "data": "", "is_ali_open": gallery.IsAliOpen})
 	}(repo)
 }
 

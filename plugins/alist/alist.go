@@ -119,7 +119,7 @@ func AlistList(isRef bool, gallery models.Gallery, path string, Authorization st
 }
 
 // 根据目录获取alist中所有文件
-func GetAlistFilesPath(path string,isRef bool, gallery models.Gallery) ([]string, error) {
+func GetAlistFilesPath(path string, isRef bool, gallery models.Gallery) ([]string, error) {
 	fileList := []string{}
 	Authorization, err := AlistLogin(gallery)
 	if err != nil {
@@ -169,4 +169,48 @@ func AlistRnameFile(name string, errfile models.ErrFile) error {
 		return nil
 	}
 	return errors.New(string(body))
+}
+
+// 刮削失败后修改文件名时候同时提交到alist修改
+func AlistAliOpenVideo(file string, gallery_uid string) (AliOpenVideo, error) {
+	gallery := models.Gallery{}
+	db := database.NewDb()
+	err := db.Model(&models.Gallery{}).Where("gallery_uid = ?", gallery_uid).First(&gallery).Error
+	if err != nil {
+		return AliOpenVideo{}, err
+	}
+	Authorization, err := AlistLogin(gallery)
+	if err != nil {
+		return AliOpenVideo{}, err
+	}
+	api := fmt.Sprintf("%s/api/fs/other", gallery.AlistHost)
+	form := fmt.Sprintf(`{"path":"%s","password":"","method":"video_preview"}`, strings.ReplaceAll(file,"/d/","/"))
+	req, err := http.NewRequest("POST", api, bytes.NewBufferString(form))
+	if err != nil {
+		return AliOpenVideo{}, err
+	}
+	req.Header.Set("User-Agent", config.UA)
+	req.Header.Set("Authorization", Authorization)
+	req.Header.Set("Content-Type", "application/json;charset=UTF-8")
+	client := http.Client{
+		Timeout: 10 * time.Second,
+	}
+	resp, err := client.Do(req)
+	if err != nil {
+		return AliOpenVideo{}, err
+	}
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return AliOpenVideo{}, err
+	}
+	var data = AliOpenVideo{}
+	err = json.Unmarshal(body, &data)
+	if err != nil {
+		return AliOpenVideo{}, err
+	}
+	if data.Code == 200 {
+		return data, nil
+	}
+	return AliOpenVideo{}, errors.New(data.Message)
 }

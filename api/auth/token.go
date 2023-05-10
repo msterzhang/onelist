@@ -28,6 +28,9 @@ func JWTAuthAdmin() gin.HandlerFunc {
 		if token == "" {
 			token = c.Request.Header.Get("token")
 		}
+		if len(token) == 0 {
+			c.JSON(http.StatusOK, gin.H{"code": 201, "msg": "not token"})
+		}
 		claims, err := ParseToken(token)
 		if err != nil {
 			if err == ErrTokenExpired {

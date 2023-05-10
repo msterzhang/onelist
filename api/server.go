@@ -67,6 +67,7 @@ func Run() {
 	r.GET("/favicon.ico", Faviconico)
 	r.GET("/", IndexView)
 	r.NoRoute(IndexView)
+
 	// 用户
 	user := r.Group("/v1/api/user")
 	user.POST("/create", controllers.CreateUser)
@@ -236,8 +237,9 @@ func Run() {
 	gallery.POST("/create", auth.JWTAuthAdmin(), controllers.CreateGallery)
 	gallery.POST("/update", auth.JWTAuthAdmin(), controllers.UpdateGalleryById)
 	gallery.POST("/delete", auth.JWTAuthAdmin(), controllers.DeleteGalleryById)
-	gallery.POST("/id", auth.JWTAuth(), controllers.GetGalleryById)
+	gallery.POST("/id", auth.JWTAuthAdmin(), controllers.GetGalleryById)
 	gallery.POST("/list", auth.JWTAuth(), controllers.GetGalleryList)
+	gallery.POST("/admin/list", auth.JWTAuthAdmin(), controllers.GetGalleryListAdmin)
 	gallery.POST("/search", auth.JWTAuth(), controllers.SearchGallery)
 	gallery.POST("/host", auth.JWTAuth(), controllers.GetGalleryHostByUid)
 
@@ -295,6 +297,14 @@ func Run() {
 	played.POST("/list", controllers.GetPlayedList)
 	played.POST("/search", controllers.SearchPlayed)
 	played.POST("/data/list", controllers.GetPlayedDataList)
+
+	//客户端首屏api
+	app := r.Group("/v1/api/app", auth.JWTAuth())
+	app.POST("/index", controllers.AppIndex)
+
+	// 阿里open
+	aliOpen := r.Group("/v1/api/aliopen")
+	aliOpen.POST("/video", controllers.AliOpenVideo)
 
 	setting := r.Group("/v1/api/config", auth.JWTAuth())
 	setting.POST("/save", auth.JWTAuthAdmin(), controllers.SaveConfig)

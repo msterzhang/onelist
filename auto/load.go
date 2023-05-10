@@ -7,6 +7,7 @@ import (
 
 	"github.com/msterzhang/onelist/api/database"
 	"github.com/msterzhang/onelist/api/models"
+	"github.com/msterzhang/onelist/api/utils/cache"
 	"github.com/msterzhang/onelist/config"
 	"gorm.io/gorm"
 )
@@ -38,6 +39,7 @@ func InitDatabase() {
 	}
 	AutoLoad()
 	InitAmdin()
+	cache.InitCache()
 }
 
 // 初始化管理员
