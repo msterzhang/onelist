@@ -5,6 +5,7 @@ import (
 
 	"github.com/msterzhang/onelist/api/models"
 	"github.com/msterzhang/onelist/api/utils/channels"
+	"github.com/msterzhang/onelist/config"
 
 	"gorm.io/gorm"
 )
@@ -182,9 +183,13 @@ func (r *RepositoryPlayedsCRUD) FindAllByUser(played models.Played, page int, si
 	done := make(chan bool)
 	go func(ch chan<- bool) {
 		defer close(ch)
-		result := r.db.Model(&models.Played{}).Where("user_id = ? AND data_type = ?", played.UserId, played.DataType).Find(&playeds)
+		result := r.db.Debug().Model(&models.Played{}).Where("user_id = ? AND data_type = ?", played.UserId, played.DataType).Find(&playeds)
 		result.Count(&num)
-		err = result.Limit(size).Offset((page - 1) * size).Order("-ID").Scan(&playeds).Error
+		if config.DBDRIVER == "sqlite" {
+			err = result.Limit(size).Offset((page - 1) * size).Order("datetime(updated_at) desc").Scan(&playeds).Error
+		} else {
+			err = result.Limit(size).Offset((page - 1) * size).Order("-updated_at").Scan(&playeds).Error
+		}
 		if err != nil {
 			ch <- false
 			return
