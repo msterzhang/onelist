@@ -117,3 +117,25 @@ nohup ./onelist -run server >/dev/null 2>&1 &
 onelist
 > QQ群   号：
 765592050
+
+
+<span><small>感谢您的关注！开源不易，需要开发者们的不断努力和付出。如果您觉得我的项目对您有所帮助，希望能够支持我继续改进和维护这个项目，您可以考虑打赏我一杯咖啡的钱。
+您的支持将是我继续前进的动力，让我能够更加专注地投入到开源社区中，让我的项目变得更加完善和有用。如果您决定打赏我，可以通过以下方式：</small></span>
+<ul>
+    <li>给该项目点赞 &nbsp;<a style="vertical-align: text-bottom;" href="https://github.com/msterzhang/onelist">
+      <img src="https://img.shields.io/github/stars/msterzhang/onelist?style=social" alt="给该项目点赞" />
+    </a></li>
+    <li>关注我的 Github &nbsp;<a style="vertical-align: text-bottom;"  href="https://github.com/msterzhang/onelist">
+      <img src="https://img.shields.io/github/followers/msterzhang?style=social" alt="关注我的 Github" />
+    </a></li>
+</ul>
+<table>
+    <thead><tr>
+        <th>微信</th>
+        <th>支付宝</th>
+    </tr></thead>
+    <tbody><tr>
+        <td><img style="max-width: 150px" src="./docs/images/wx.png" alt="微信" /></td>
+        <td><img style="max-width: 150px" src="./docs/images/zfb.jpg" alt="支付宝" /></td>
+    </tr></tbody>
+</table>
