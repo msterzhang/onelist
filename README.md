@@ -1,7 +1,7 @@
 # onelist
 一个类似emby的专注于刮削alist聚合网盘形成影视媒体库的程序。
 
-![](./docs/images/01.png)
+![](./docs/imgs/01.png)
 
 ### 主要解决以下痛点：
 
@@ -83,7 +83,7 @@ nohup ./onelist -run server >/dev/null 2>&1 &
 ## 4.登录
 访问你的`ip:端口`就可以进入管理后台了(记得防火墙放行该端口)
 ## 5.添加媒体库
-![](./docs/images/02.png)
+![](./docs/imgs/02.png)
 
 1.对应输入媒体库名字，比如电影，类型选择movie
 
@@ -135,7 +135,7 @@ onelist
         <th>支付宝</th>
     </tr></thead>
     <tbody><tr>
-        <td><img style="max-width: 150px" src="./docs/images/wx.png" alt="微信" /></td>
-        <td><img style="max-width: 150px" src="./docs/images/zfb.jpg" alt="支付宝" /></td>
+        <td><img style="max-width: 150px" src="./docs/imgs/wx.png" alt="微信" /></td>
+        <td><img style="max-width: 150px" src="./docs/imgs/zfb.jpg" alt="支付宝" /></td>
     </tr></tbody>
 </table>
