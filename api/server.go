@@ -312,6 +312,13 @@ func Run() {
 	setting := r.Group("/v1/api/config", auth.JWTAuth())
 	setting.POST("/save", auth.JWTAuthAdmin(), controllers.SaveConfig)
 	setting.POST("/data", controllers.GetConfig)
+	r.GET("/v1/api/configs", controllers.GetWebConfig)
+
+	r.GET("/onelist/ping", func(c *gin.Context) {
+		configData := config.GetConfig()
+		configData.KeyDb = ""
+		c.JSON(200, gin.H{"code": 200, "msg": "success", "data": configData})
+	})
 
 	r.GET("/t/p/*path", controllers.ImgServer)
 	r.GET("/gallery/*path", controllers.GalleryImgServer)

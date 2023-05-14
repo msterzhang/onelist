@@ -6,6 +6,13 @@ import (
 	"github.com/msterzhang/onelist/config"
 )
 
+func GetWebConfig(c *gin.Context) {
+	configData := config.GetConfig()
+	configData.KeyDb=""
+	c.JSON(200, gin.H{"code": 200, "msg": "获取成功!", "data": configData})
+}
+
+
 func GetConfig(c *gin.Context) {
 	configData := config.GetConfig()
 	c.JSON(200, gin.H{"code": 200, "msg": "获取成功!", "data": configData})

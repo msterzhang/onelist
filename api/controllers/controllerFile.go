@@ -15,7 +15,7 @@ import (
 // 图片文件服务
 func ImgServer(c *gin.Context) {
 	path := c.Param("path")
-	filePath := "images/" + path
+	filePath := "images" + path
 	c.Writer.WriteHeader(200)
 	b, err := os.ReadFile(filePath)
 	if err != nil {

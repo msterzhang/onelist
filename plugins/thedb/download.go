@@ -11,11 +11,12 @@ import (
 )
 
 var imgpath = "images"
+var imgcdn = "https://tmdb-image-prod.b-cdn.net"
 
-var dirs = []string{"w220_and_h330_face", "w710_and_h400_multi_faces", "w227_and_h127_bestv2", "w1920_and_h1080_bestv2", "w355_and_h200_multi_faces"}
+var dirs = []string{"w220_and_h330_face", "w440_and_h660_face", "w600_and_h900_bestv2", "w710_and_h400_multi_faces", "w227_and_h127_bestv2", "w1920_and_h1080_bestv2", "w355_and_h200_multi_faces"}
 
 // 下载竖向海报图
-var keys = []string{"w220_and_h330_face"}
+var keys = []string{"w220_and_h330_face", "w440_and_h660_face", "w600_and_h900_bestv2"}
 
 // 电视分季信息图片
 var keysSeason = []string{"w220_and_h330_face"}
@@ -46,14 +47,14 @@ func DownImages(id string) error {
 	}
 	initDir()
 	for _, key := range keys {
-		url := fmt.Sprintf("https://image.tmdb.org/t/p/%s/%s", key, id)
+		url := fmt.Sprintf("%s/t/p/%s/%s", imgcdn, key, id)
 		file := fmt.Sprintf("%s/%s/%s", imgpath, key, id)
 		if dir.FileExists(file) {
-			return nil
+			continue
 		}
 		err := Download(url, file)
 		if err != nil {
-			return err
+			continue
 		}
 	}
 	return nil
@@ -66,14 +67,14 @@ func DownSeasonImages(id string) error {
 	}
 	initDir()
 	for _, key := range keysSeason {
-		url := fmt.Sprintf("https://image.tmdb.org/t/p/%s/%s", key, id)
+		url := fmt.Sprintf("%s/t/p/%s/%s", imgcdn, key, id)
 		file := fmt.Sprintf("%s/%s/%s", imgpath, key, id)
 		if dir.FileExists(file) {
-			return nil
+			continue
 		}
 		err := Download(url, file)
 		if err != nil {
-			return err
+			continue
 		}
 	}
 	return nil
@@ -86,14 +87,14 @@ func DownEpisodeImages(id string) error {
 	}
 	initDir()
 	for _, key := range keysEpisode {
-		url := fmt.Sprintf("https://image.tmdb.org/t/p/%s/%s", key, id)
+		url := fmt.Sprintf("%s/t/p/%s/%s", imgcdn, key, id)
 		file := fmt.Sprintf("%s/%s/%s", imgpath, key, id)
 		if dir.FileExists(file) {
-			return nil
+			continue
 		}
 		err := Download(url, file)
 		if err != nil {
-			return err
+			continue
 		}
 	}
 	return nil
@@ -105,7 +106,7 @@ func DownPersonImage(id string) error {
 		return nil
 	}
 	initDir()
-	url := fmt.Sprintf("https://image.tmdb.org/t/p/%s/%s", "w220_and_h330_face", id)
+	url := fmt.Sprintf("%s/t/p/%s/%s", imgcdn, "w220_and_h330_face", id)
 	file := fmt.Sprintf("%s/%s/%s", imgpath, "w220_and_h330_face", id)
 	if dir.FileExists(file) {
 		return nil
@@ -124,14 +125,14 @@ func DownBackImage(id string) error {
 	}
 	initDir()
 	for _, key := range keysBackImge {
-		url := fmt.Sprintf("https://image.tmdb.org/t/p/%s/%s", key, id)
+		url := fmt.Sprintf("%s/t/p/%s/%s", imgcdn, key, id)
 		file := fmt.Sprintf("%s/%s/%s", imgpath, key, id)
 		if dir.FileExists(file) {
-			return nil
+			continue
 		}
 		err := Download(url, file)
 		if err != nil {
-			return err
+			continue
 		}
 	}
 	return nil
