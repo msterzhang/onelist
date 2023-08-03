@@ -6,7 +6,7 @@
 ```
 version: '3.3'
 services:
-  alist:
+  onelist:
     restart: always
     container_name: onelist
     image: 'msterzhang/onelist:latest'

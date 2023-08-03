@@ -55,39 +55,39 @@ func AppIndex(c *gin.Context) {
 			thetvs := []models.TheTv{}
 			result := db.Model(&models.TheTv{}).Find(&thetvs)
 			if config.DBDRIVER == "sqlite" {
-				err := result.Limit(size).Offset((page - 1) * size).Order("datetime(updated_at) desc").Scan(&thetvs).Error
+				err := result.Where("gallery_uid = ?", gallery.GalleryUid).Limit(size).Offset((page - 1) * size).Order("datetime(updated_at) desc").Scan(&thetvs).Error
 				if err != nil {
 					continue
 				}
 			} else {
-				err := result.Limit(size).Offset((page - 1) * size).Order("-updated_at").Scan(&thetvs).Error
+				err := result.Where("gallery_uid = ?", gallery.GalleryUid).Limit(size).Offset((page - 1) * size).Order("-updated_at").Scan(&thetvs).Error
 				if err != nil {
 					continue
 				}
 			}
 			thetvsNew := service.TheTvsService(thetvs, c.GetString("UserId"))
-			thedata := models.TheDataIndex{Title: gallery.Title, GalleryType: gallery.GalleryType, TheTvList: thetvsNew}
+			thedata := models.TheDataIndex{Title: gallery.Title, GalleryUid: gallery.GalleryUid, GalleryType: gallery.GalleryType, TheTvList: thetvsNew}
 			thedatas = append(thedatas, thedata)
 		} else {
 			themovies := []models.TheMovie{}
 			result := db.Model(&models.TheMovie{}).Find(&themovies)
 			if config.DBDRIVER == "sqlite" {
-				err := result.Limit(size).Offset((page - 1) * size).Order("datetime(updated_at) desc").Scan(&themovies).Error
+				err := result.Where("gallery_uid = ?", gallery.GalleryUid).Limit(size).Offset((page - 1) * size).Order("datetime(updated_at) desc").Scan(&themovies).Error
 				if err != nil {
 					continue
 				}
 			} else {
-				err := result.Limit(size).Offset((page - 1) * size).Order("-updated_at").Scan(&themovies).Error
+				err := result.Where("gallery_uid = ?", gallery.GalleryUid).Limit(size).Offset((page - 1) * size).Order("-updated_at").Scan(&themovies).Error
 				if err != nil {
 					continue
 				}
 			}
 			themoviesNew := service.TheMoviesService(themovies, c.GetString("UserId"))
-			thedata := models.TheDataIndex{Title: gallery.Title, GalleryType: gallery.GalleryType, TheMovieList: themoviesNew}
+			thedata := models.TheDataIndex{Title: gallery.Title, GalleryUid: gallery.GalleryUid, GalleryType: gallery.GalleryType, TheMovieList: themoviesNew}
 			thedatas = append(thedatas, thedata)
 		}
 	}
 	videoText, _ := json.Marshal(thedatas)
-	cDb.Set(string(config.SECRETKEY), videoText, 1*time.Minute)
+	cDb.Set(string(config.SECRETKEY), videoText, 10*time.Microsecond)
 	c.JSON(200, gin.H{"code": 200, "msg": "查询资源成功!", "data": thedatas})
 }
