@@ -2,6 +2,8 @@ package api
 
 import (
 	"fmt"
+	"github.com/msterzhang/onelist/api/barrage"
+	"github.com/msterzhang/onelist/api/progress"
 	"io/fs"
 	"log"
 	"net/http"
@@ -313,6 +315,15 @@ func Run() {
 	setting.POST("/save", auth.JWTAuthAdmin(), controllers.SaveConfig)
 	setting.POST("/data", controllers.GetConfig)
 	r.GET("/v1/api/configs", controllers.GetWebConfig)
+
+	// 播放进度
+	_progress := r.Group("/v1/api/progress", auth.JWTAuth())
+	_progress.GET("/get", progress.Get)
+	_progress.POST("/update", progress.Update)
+
+	// 获取弹幕文件
+	_barrage := r.Group("/v1/api/barrage")
+	_barrage.GET("/get", barrage.Get)
 
 	r.GET("/onelist/ping", func(c *gin.Context) {
 		configData := config.GetConfig()

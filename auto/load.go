@@ -185,4 +185,9 @@ func AutoLoad() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	err = db.AutoMigrate(&models.Progress{})
+	if err != nil {
+		log.Fatal(err)
+	}
 }

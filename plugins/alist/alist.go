@@ -83,6 +83,40 @@ func AlistFilesByPath(isRef bool, gallery models.Gallery, path string, Authoriza
 	return []Content{}, errors.New(data.Message)
 }
 
+func AlistFileUrl(gallery models.Gallery, path string) (AlistFileData, error) {
+	api := fmt.Sprintf("%s/api/fs/get", gallery.AlistHost)
+	form := fmt.Sprintf(`{"path":"%s","password":"","page":1,"per_page":0,"refresh":%t}`, strings.Split(path, "?sign")[0], false)
+	Authorization, err := AlistLogin(gallery)
+	req, err := http.NewRequest("POST", api, bytes.NewBufferString(form))
+	if err != nil {
+		return AlistFileData{}, err
+	}
+	req.Header.Set("User-Agent", config.UA)
+	req.Header.Set("Authorization", Authorization)
+	req.Header.Set("Content-Type", "application/json;charset=UTF-8")
+	client := http.Client{
+		Timeout: 10 * time.Second,
+	}
+	resp, err := client.Do(req)
+	if err != nil {
+		return AlistFileData{}, err
+	}
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return AlistFileData{}, err
+	}
+	var data = AlistFileData{}
+	err = json.Unmarshal(body, &data)
+	if err != nil {
+		return AlistFileData{}, err
+	}
+	if data.Code == 200 {
+		return data, nil
+	}
+	return AlistFileData{}, errors.New(data.Message)
+}
+
 // 递归获取所有文件
 func AlistList(isRef bool, gallery models.Gallery, path string, Authorization string, fileList []string) ([]string, error) {
 	fs, err := AlistFilesByPath(isRef, gallery, path, Authorization)
